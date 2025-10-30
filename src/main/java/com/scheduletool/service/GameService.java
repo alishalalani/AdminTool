@@ -94,5 +94,14 @@ public class GameService {
         
         return games;
     }
+
+    /**
+     * Get count of games for a specific group
+     * @param groupId The group ID
+     * @return Count of games in the group
+     */
+    public Long getGameCountByGroupId(Integer groupId) {
+        return groupEventRepository.countByGroupId(groupId);
+    }
 }
 

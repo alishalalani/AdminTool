@@ -285,7 +285,7 @@ function loadGroups() {
         });
 }
 
-function displayGroups(groups) {
+async function displayGroups(groups) {
     const container = document.getElementById('groups-container');
     const countBadge = document.getElementById('group-count');
 
@@ -305,7 +305,19 @@ function displayGroups(groups) {
         return;
     }
 
-    container.innerHTML = groups.map(group => `
+    // Fetch game counts for all groups
+    const groupsWithCounts = await Promise.all(groups.map(async (group) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/games/group/${group.id}/count`);
+            const count = await response.json();
+            return { ...group, gameCount: count };
+        } catch (error) {
+            console.error(`Error fetching count for group ${group.id}:`, error);
+            return { ...group, gameCount: 0 };
+        }
+    }));
+
+    container.innerHTML = groupsWithCounts.map(group => `
         <div class="group-card ${state.selectedGroup && state.selectedGroup.id === group.id ? 'active' : ''}"
              onclick="selectGroup(${group.id})">
             <div class="group-header">
@@ -323,6 +335,9 @@ function displayGroups(groups) {
                         </div>
                         <div class="group-meta-item">
                             <span>ID: ${group.id}</span>
+                        </div>
+                        <div class="group-meta-item group-game-count">
+                            <span>${group.gameCount} ${group.gameCount === 1 ? 'game' : 'games'}</span>
                         </div>
                     </div>
                 </div>

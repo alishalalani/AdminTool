@@ -10,8 +10,11 @@ import java.util.List;
 
 @Repository
 public interface GroupEventRepository extends JpaRepository<GroupEvent, Integer> {
-    
+
     @Query("SELECT ge.eventId FROM GroupEvent ge WHERE ge.groupId = :groupId")
     List<Integer> findEventIdsByGroupId(@Param("groupId") Integer groupId);
+
+    @Query("SELECT COUNT(ge) FROM GroupEvent ge WHERE ge.groupId = :groupId")
+    Long countByGroupId(@Param("groupId") Integer groupId);
 }
 

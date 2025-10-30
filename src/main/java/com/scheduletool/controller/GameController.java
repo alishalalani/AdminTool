@@ -26,5 +26,16 @@ public class GameController {
         List<GameDTO> games = gameService.getGamesByGroupId(groupId);
         return ResponseEntity.ok(games);
     }
+
+    /**
+     * Get count of games for a specific group
+     * @param groupId The group ID
+     * @return Count of games in the group
+     */
+    @GetMapping("/group/{groupId}/count")
+    public ResponseEntity<Long> getGameCountByGroupId(@PathVariable Integer groupId) {
+        Long count = gameService.getGameCountByGroupId(groupId);
+        return ResponseEntity.ok(count);
+    }
 }
 

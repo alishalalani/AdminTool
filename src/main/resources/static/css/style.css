@@ -577,6 +577,11 @@ body {
     stroke-width: 2;
 }
 
+.group-game-count {
+    font-weight: 600;
+    color: var(--primary);
+}
+
 /* Right Panel - Events/Games */
 .right-panel {
     flex: 1;
