@@ -821,13 +821,20 @@ async function editTeam(element, leagueId, participantId) {
         const response = await fetch(`${API_BASE_URL}/games/league/${leagueId}/teams`);
         const teams = await response.json();
 
-        if (teams.length === 0) {
+        console.log('Fetched teams:', teams);
+        console.log('Total teams:', teams.length);
+
+        // Filter out teams without names
+        const validTeams = teams.filter(team => team.teamName && team.teamName.trim() !== '');
+        console.log('Valid teams with names:', validTeams.length);
+
+        if (validTeams.length === 0) {
             showError('No teams found for this league');
             return;
         }
 
         // Show team selection modal
-        showTeamSelectionModal(teams, participantId);
+        showTeamSelectionModal(validTeams, participantId);
     } catch (error) {
         console.error('Error fetching teams:', error);
         showError('Failed to load teams');
@@ -836,6 +843,7 @@ async function editTeam(element, leagueId, participantId) {
 
 // Show team selection modal
 function showTeamSelectionModal(teams, participantId) {
+    console.log ("teams lebgth: ", teams.length);
     // Create modal overlay
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
