@@ -25,7 +25,7 @@ public class TeamController {
     
     @GetMapping("/active")
     public ResponseEntity<List<Team>> getActiveTeams() {
-        List<Team> teams = teamService.getActiveTeams();
+        List<Team> teams = teamService.getAllTeams();
         return ResponseEntity.ok(teams);
     }
     

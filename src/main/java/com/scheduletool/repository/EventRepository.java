@@ -15,6 +15,5 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findByDateAndLeague(LocalDate date, League league);
     Event findByDateAndNumber(LocalDate date, Integer number);
     List<Event> findByDateBetween(LocalDate startDate, LocalDate endDate);
-    List<Event> findByExcludeFalse();
 }
 

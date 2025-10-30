@@ -8,108 +8,68 @@ import java.time.OffsetDateTime;
  * Replaces gsutils.data.Event_Time
  */
 @Entity
-
-    
-
 @Table(name = "event_time")
 public class EventTime {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
-    
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
-    
+    @Column(name = "event_id")
+    private Integer eventId;
+
     @Column(name = "time")
     private OffsetDateTime time;
-    
+
     @Column(name = "TBA")
-    private Boolean tba;
-    
-    @Column(name = "override")
-    private Boolean override;
-    
-    @ManyToOne
-    @JoinColumn(name = "source_id")
-    private Source source;
-    
+    private Integer tba;
+
     @Column(name = "timestamp")
     private OffsetDateTime timestamp;
     
     // Constructors
     public EventTime() {
     }
-    
-    public EventTime(Event event) {
-        this.event = event;
-        this.tba = false;
-        this.override = false;
+
+    public EventTime(Integer eventId) {
+        this.eventId = eventId;
+        this.tba = 0;
     }
-    
+
     // Getters and Setters
-    public Integer getId() {
-        return id;
+    public Integer getEventId() {
+        return eventId;
     }
-    
-    public void setId(Integer id) {
-        this.id = id;
+
+    public void setEventId(Integer eventId) {
+        this.eventId = eventId;
     }
-    
-    public Event getEvent() {
-        return event;
-    }
-    
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-    
+
     public OffsetDateTime getTime() {
         return time;
     }
-    
+
     public void setTime(OffsetDateTime time) {
         this.time = time;
     }
-    
-    public Boolean getTba() {
+
+    public Integer getTba() {
         return tba;
     }
-    
-    public void setTba(Boolean tba) {
+
+    public void setTba(Integer tba) {
         this.tba = tba;
     }
-    
-    public Boolean getOverride() {
-        return override;
-    }
-    
-    public void setOverride(Boolean override) {
-        this.override = override;
-    }
-    
-    public Source getSource() {
-        return source;
-    }
-    
-    public void setSource(Source source) {
-        this.source = source;
-    }
-    
+
     public OffsetDateTime getTimestamp() {
         return timestamp;
     }
-    
+
     public void setTimestamp(OffsetDateTime timestamp) {
         this.timestamp = timestamp;
     }
-    
+
     @Override
     public String toString() {
         return "EventTime{" +
-                "id=" + id +
+                "eventId=" + eventId +
                 ", time=" + time +
                 ", tba=" + tba +
                 '}';

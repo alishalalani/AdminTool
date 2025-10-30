@@ -1,3 +1,4 @@
+com\scheduletool\model\GroupEvent.class
 com\scheduletool\service\ScheduleService.class
 com\scheduletool\model\Location.class
 com\scheduletool\repository\LeagueRepository.class
@@ -17,7 +18,11 @@ com\scheduletool\repository\CategoryRepository.class
 com\scheduletool\model\EventTime.class
 com\scheduletool\model\PresetMessage.class
 com\scheduletool\repository\LocationRepository.class
+com\scheduletool\repository\EventTimeRepository.class
+com\scheduletool\repository\ParticipantRepository.class
 com\scheduletool\service\PlayerService.class
+com\scheduletool\repository\ParticipantLeagueTeamRepository.class
+com\scheduletool\controller\GameController.class
 com\scheduletool\model\LeagueTeamPlayer.class
 com\scheduletool\repository\PlayerRepository.class
 com\scheduletool\service\TeamService.class
@@ -28,10 +33,13 @@ com\scheduletool\repository\SportsbookRepository.class
 com\scheduletool\model\EventItem.class
 com\scheduletool\service\EventService.class
 com\scheduletool\service\CategoryService.class
+com\scheduletool\model\Participant.class
 com\scheduletool\repository\EventScoreRepository.class
+com\scheduletool\dto\GameDTO.class
 com\scheduletool\model\Venue.class
 com\scheduletool\repository\TeamRepository.class
 com\scheduletool\model\Category.class
+com\scheduletool\model\GroupEvent$GroupEventId.class
 com\scheduletool\model\LineserverSportsbook.class
 com\scheduletool\controller\CategoryController.class
 com\scheduletool\model\League.class
@@ -40,8 +48,10 @@ com\scheduletool\model\LeagueEquivalent.class
 com\scheduletool\model\LeaguePlayer.class
 com\scheduletool\controller\SportController.class
 com\scheduletool\controller\TeamController.class
+com\scheduletool\model\ParticipantLeagueTeam.class
 com\scheduletool\controller\ScoreController.class
 com\scheduletool\model\Player.class
+com\scheduletool\service\GameService.class
 com\scheduletool\model\Sport.class
 com\scheduletool\model\Source.class
 com\scheduletool\model\Sportsbook.class
@@ -55,3 +65,4 @@ com\scheduletool\repository\EventRepository.class
 com\scheduletool\repository\ScheduleRepository.class
 com\scheduletool\controller\PlayerController.class
 com\scheduletool\repository\LeagueTeamRepository.class
+com\scheduletool\repository\GroupEventRepository.class

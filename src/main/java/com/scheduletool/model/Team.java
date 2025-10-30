@@ -8,97 +8,127 @@ import java.time.OffsetDateTime;
  * Replaces gsutils.data.Team
  */
 @Entity
- 
-    
-
 @Table(name = "team")
 public class Team {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
-    
+
     @Column(name = "name", nullable = false, length = 100)
     private String name;
-    
-    @Column(name = "abbreviation", length = 10)
-    private String abbreviation;
-    
-    @Column(name = "city", length = 100)
-    private String city;
-    
-    @Column(name = "active")
-    private Boolean active;
-    
-    @Column(name = "timestamp")
-    private OffsetDateTime timestamp;
+
+    @Column(name = "first_name", length = 100)
+    private String firstName;
+
+    @Column(name = "nickname", length = 100)
+    private String nickname;
+
+    @Column(name = "abbr", length = 10)
+    private String abbr;
+
+    @Column(name = "abbr_parser", length = 10)
+    private String abbrParser;
+
+    @Column(name = "full_name", length = 200)
+    private String fullName;
+
+    @Column(name = "location_id")
+    private Integer locationId;
+
+    @Column(name = "created")
+    private OffsetDateTime created;
     
     // Constructors
     public Team() {
     }
-    
+
     public Team(String name) {
         this.name = name;
-        this.active = true;
     }
-    
+
     // Getters and Setters
     public Integer getId() {
         return id;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
-    public String getAbbreviation() {
-        return abbreviation;
+
+    public String getFirstName() {
+        return firstName;
     }
-    
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
-    
-    public String getCity() {
-        return city;
+
+    public String getNickname() {
+        return nickname;
     }
-    
-    public void setCity(String city) {
-        this.city = city;
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
-    
-    public Boolean getActive() {
-        return active;
+
+    public String getAbbr() {
+        return abbr;
     }
-    
-    public void setActive(Boolean active) {
-        this.active = active;
+
+    public void setAbbr(String abbr) {
+        this.abbr = abbr;
     }
-    
-    public OffsetDateTime getTimestamp() {
-        return timestamp;
+
+    public String getAbbrParser() {
+        return abbrParser;
     }
-    
-    public void setTimestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+
+    public void setAbbrParser(String abbrParser) {
+        this.abbrParser = abbrParser;
     }
-    
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public Integer getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Integer locationId) {
+        this.locationId = locationId;
+    }
+
+    public OffsetDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(OffsetDateTime created) {
+        this.created = created;
+    }
+
     @Override
     public String toString() {
         return "Team{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", abbreviation='" + abbreviation + '\'' +
-                ", city='" + city + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", abbr='" + abbr + '\'' +
                 '}';
     }
 }

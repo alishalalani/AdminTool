@@ -73,7 +73,7 @@ public class EventItemLeagueTeam {
     public String toString() {
         return "EventItemLeagueTeam{" +
                 "id=" + id +
-                ", leagueTeam=" + (leagueTeam != null ? leagueTeam.getName() : "null") +
+                ", leagueTeam=" + (leagueTeam != null ? leagueTeam.getId() : "null") +
                 '}';
     }
 }

@@ -318,25 +318,32 @@ function clearGroups() {
 
 // Load events
 function loadEvents(groupId) {
-    fetch(`${API_BASE_URL}/events`)
-        .then(response => response.json())
-        .then(events => {
-            state.events = events;
-            displayEvents(events);
+    fetch(`${API_BASE_URL}/games/group/${groupId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(games => {
+            console.log('Loaded games for group', groupId, ':', games);
+            state.events = games;
+            displayEvents(games);
         })
         .catch(error => {
-            console.error('Error loading events:', error);
-            showError('Failed to load events');
+            console.error('Error loading games:', error);
+            showError('Failed to load games');
+            document.getElementById('events-container').innerHTML = '<div class="empty-state"><p>Error loading games</p></div>';
         });
 }
 
-function displayEvents(events) {
+function displayEvents(games) {
     const container = document.getElementById('events-container');
     const countBadge = document.getElementById('event-count');
 
-    countBadge.textContent = events.length;
+    countBadge.textContent = games.length;
 
-    if (events.length === 0) {
+    if (games.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -350,24 +357,39 @@ function displayEvents(events) {
         return;
     }
 
-    container.innerHTML = events.map(event => `
-        <div class="event-card">
-            <div class="event-header">
-                <div class="event-time">${event.time || 'TBD'}</div>
-                <div class="event-number">#${event.number || event.id}</div>
-            </div>
-            <div class="event-teams">
-                <div class="team-row">
-                    <div class="team-name">Team 1</div>
-                    <div class="team-score">-</div>
+    container.innerHTML = games.map(game => {
+        // Format the time
+        let timeDisplay = 'TBD';
+        if (game.time) {
+            const gameTime = new Date(game.time);
+            timeDisplay = gameTime.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        } else if (game.tba) {
+            timeDisplay = 'TBA';
+        }
+
+        return `
+            <div class="event-card">
+                <div class="event-header">
+                    <div class="event-time">${timeDisplay}</div>
+                    <div class="event-number">#${game.number || game.eventId}</div>
                 </div>
-                <div class="team-row">
-                    <div class="team-name">Team 2</div>
-                    <div class="team-score">-</div>
+                <div class="event-teams">
+                    <div class="team-row">
+                        <div class="team-name">${game.awayTeam || 'TBD'}</div>
+                        <div class="team-score">-</div>
+                    </div>
+                    <div class="team-row">
+                        <div class="team-name">${game.homeTeam || 'TBD'}</div>
+                        <div class="team-score">-</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function clearEvents() {

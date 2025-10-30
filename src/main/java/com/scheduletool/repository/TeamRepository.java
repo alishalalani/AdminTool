@@ -8,9 +8,8 @@ import java.util.List;
 
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Integer> {
-    List<Team> findByActiveTrue();
     Team findByName(String name);
-    Team findByAbbreviation(String abbreviation);
-    List<Team> findByCity(String city);
+    Team findByAbbr(String abbr);
+    Team findByNickname(String nickname);
 }
 

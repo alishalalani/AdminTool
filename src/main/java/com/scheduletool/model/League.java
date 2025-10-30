@@ -36,10 +36,6 @@ public class League {
 
     @JsonIgnore
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL)
-    private List<LeagueTeam> teams;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL)
     private List<Category> categories;
     
     // Constructors
@@ -92,15 +88,7 @@ public class League {
     public void setCreated(OffsetDateTime created) {
         this.created = created;
     }
-    
-    public List<LeagueTeam> getTeams() {
-        return teams;
-    }
-    
-    public void setTeams(List<LeagueTeam> teams) {
-        this.teams = teams;
-    }
-    
+
     public List<Category> getCategories() {
         return categories;
     }

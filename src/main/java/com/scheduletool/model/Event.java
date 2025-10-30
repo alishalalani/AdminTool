@@ -29,28 +29,19 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "league_id", nullable = false)
     private League league;
-    
-    @Column(name = "exclude")
-    private Boolean exclude;
-    
+
     @Column(name = "double_header")
     private Integer doubleHeader;
-    
+
     @Column(name = "timestamp")
     private OffsetDateTime timestamp;
-    
-    @Column(name = "updated")
-    private OffsetDateTime updated;
-    
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventItem> eventItems;
-    
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<EventTime> eventTimes;
-    
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventVenue> eventVenues;
-    
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventScore> eventScores;
     
@@ -62,7 +53,6 @@ public class Event {
         this.date = date;
         this.number = number;
         this.league = league;
-        this.exclude = false;
         this.doubleHeader = 0;
     }
     
@@ -98,15 +88,7 @@ public class Event {
     public void setLeague(League league) {
         this.league = league;
     }
-    
-    public Boolean getExclude() {
-        return exclude;
-    }
-    
-    public void setExclude(Boolean exclude) {
-        this.exclude = exclude;
-    }
-    
+
     public Integer getDoubleHeader() {
         return doubleHeader;
     }
@@ -122,15 +104,7 @@ public class Event {
     public void setTimestamp(OffsetDateTime timestamp) {
         this.timestamp = timestamp;
     }
-    
-    public OffsetDateTime getUpdated() {
-        return updated;
-    }
-    
-    public void setUpdated(OffsetDateTime updated) {
-        this.updated = updated;
-    }
-    
+
     public List<EventItem> getEventItems() {
         return eventItems;
     }
@@ -138,15 +112,7 @@ public class Event {
     public void setEventItems(List<EventItem> eventItems) {
         this.eventItems = eventItems;
     }
-    
-    public List<EventTime> getEventTimes() {
-        return eventTimes;
-    }
-    
-    public void setEventTimes(List<EventTime> eventTimes) {
-        this.eventTimes = eventTimes;
-    }
-    
+
     public List<EventVenue> getEventVenues() {
         return eventVenues;
     }

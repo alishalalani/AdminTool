@@ -57,7 +57,6 @@ public class EventService {
         event.setDate(eventDetails.getDate());
         event.setNumber(eventDetails.getNumber());
         event.setLeague(eventDetails.getLeague());
-        event.setExclude(eventDetails.getExclude());
         event.setDoubleHeader(eventDetails.getDoubleHeader());
         
         return eventRepository.save(event);
