@@ -75,28 +75,47 @@ function refreshAll() {
 // Load sports
 function loadSports() {
     fetch(`${API_BASE_URL}/sports`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(sports => {
+            console.log('Loaded sports:', sports);
             state.sports = sports;
             displaySports(sports);
         })
         .catch(error => {
             console.error('Error loading sports:', error);
             showError('Failed to load sports');
+            // Show error in dropdown
+            const sportSelect = document.getElementById('sport-select');
+            sportSelect.innerHTML = '<option value="">Error loading sports</option>';
         });
 }
 
 function displaySports(sports) {
     const sportSelect = document.getElementById('sport-select');
 
-    if (sports.length === 0) {
+    if (!sports || sports.length === 0) {
         sportSelect.innerHTML = '<option value="">No sports available</option>';
         return;
     }
 
+    // Filter only active sports (active = 1 or true)
+    const activeSports = sports.filter(sport => sport.active === true || sport.active === 1);
+
+    console.log('Active sports:', activeSports);
+
+    if (activeSports.length === 0) {
+        sportSelect.innerHTML = '<option value="">No active sports</option>';
+        return;
+    }
+
     sportSelect.innerHTML = '<option value="">Select Sport...</option>' +
-        sports.map(sport => `
-            <option value="${sport.id}">${sport.name} ${sport.abbreviation ? '(' + sport.abbreviation + ')' : ''}</option>
+        activeSports.map(sport => `
+            <option value="${sport.id}">${sport.name}</option>
         `).join('');
 
     // Add change event listener

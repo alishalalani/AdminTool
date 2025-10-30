@@ -20,14 +20,14 @@ public class Sport {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
     
-    @Column(name = "abbreviation", length = 10)
+    @Column(name = "abbr", length = 10)
     private String abbreviation;
     
     @Column(name = "active")
     private Boolean active;
-    
-    @Column(name = "timestamp")
-    private OffsetDateTime timestamp;
+
+    @Column(name = "created")
+    private OffsetDateTime created;
     
     // Constructors
     public Sport() {
@@ -71,12 +71,12 @@ public class Sport {
         this.active = active;
     }
     
-    public OffsetDateTime getTimestamp() {
-        return timestamp;
+    public OffsetDateTime getCreated() {
+        return created;
     }
-    
-    public void setTimestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+
+    public void setCreated(OffsetDateTime created) {
+        this.created = created;
     }
     
     @Override
