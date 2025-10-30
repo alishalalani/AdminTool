@@ -36,20 +36,27 @@ public class LeagueService {
     public List<League> getLeaguesBySport(Sport sport) {
         return leagueRepository.findBySport(sport);
     }
-    
+
+    public List<League> getLeaguesBySportId(Integer sportId) {
+        return leagueRepository.findBySportId(sportId);
+    }
+
+    public List<League> getActiveLeaguesBySportId(Integer sportId) {
+        return leagueRepository.findBySportIdAndActive(sportId, true);
+    }
+
     public League createLeague(League league) {
         return leagueRepository.save(league);
     }
-    
+
     public League updateLeague(Integer id, League leagueDetails) {
         League league = leagueRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("League not found with id: " + id));
-        
+
         league.setName(leagueDetails.getName());
-        league.setAbbreviation(leagueDetails.getAbbreviation());
         league.setSport(leagueDetails.getSport());
         league.setActive(leagueDetails.getActive());
-        
+
         return leagueRepository.save(league);
     }
     

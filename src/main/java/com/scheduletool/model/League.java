@@ -1,5 +1,6 @@
 package com.scheduletool.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -26,19 +27,18 @@ public class League {
     
     @Column(name = "name", nullable = false, length = 100)
     private String name;
-    
-    @Column(name = "abbreviation", length = 20)
-    private String abbreviation;
-    
+
     @Column(name = "active")
     private Boolean active;
-    
-    @Column(name = "timestamp")
-    private OffsetDateTime timestamp;
-    
+
+    @Column(name = "created")
+    private OffsetDateTime created;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL)
     private List<LeagueTeam> teams;
-    
+
+    @JsonIgnore
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL)
     private List<Category> categories;
     
@@ -72,33 +72,25 @@ public class League {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
-    public String getAbbreviation() {
-        return abbreviation;
-    }
-    
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
-    }
-    
+
     public Boolean getActive() {
         return active;
     }
-    
+
     public void setActive(Boolean active) {
         this.active = active;
     }
-    
-    public OffsetDateTime getTimestamp() {
-        return timestamp;
+
+    public OffsetDateTime getCreated() {
+        return created;
     }
-    
-    public void setTimestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+
+    public void setCreated(OffsetDateTime created) {
+        this.created = created;
     }
     
     public List<LeagueTeam> getTeams() {
@@ -122,7 +114,6 @@ public class League {
         return "League{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", abbreviation='" + abbreviation + '\'' +
                 ", sport=" + (sport != null ? sport.getName() : "null") +
                 ", active=" + active +
                 '}';

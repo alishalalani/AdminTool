@@ -28,7 +28,13 @@ public class LeagueController {
         List<League> leagues = leagueService.getActiveLeagues();
         return ResponseEntity.ok(leagues);
     }
-    
+
+    @GetMapping("/sport/{sportId}")
+    public ResponseEntity<List<League>> getLeaguesBySportId(@PathVariable Integer sportId) {
+        List<League> leagues = leagueService.getActiveLeaguesBySportId(sportId);
+        return ResponseEntity.ok(leagues);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<League> getLeagueById(@PathVariable Integer id) {
         return leagueService.getLeagueById(id)

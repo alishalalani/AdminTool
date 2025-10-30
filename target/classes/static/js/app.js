@@ -115,7 +115,7 @@ function displaySports(sports) {
 
     sportSelect.innerHTML = '<option value="">Select Sport...</option>' +
         activeSports.map(sport => `
-            <option value="${sport.id}">${sport.name}${sport.abbreviation ? ' (' + sport.abbreviation + ')' : ''}</option>
+            <option value="${sport.id}">${sport.name}</option>
         `).join('');
 
     // Add change event listener
@@ -154,16 +154,22 @@ function selectSport(sportId) {
 
 // Load leagues
 function loadLeagues(sportId) {
-    fetch(`${API_BASE_URL}/leagues`)
-        .then(response => response.json())
+    fetch(`${API_BASE_URL}/leagues/sport/${sportId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(leagues => {
-            const filteredLeagues = leagues.filter(l => l.sport && l.sport.id === sportId);
-            state.leagues = filteredLeagues;
-            displayLeagues(filteredLeagues);
+            console.log('Loaded leagues for sport', sportId, ':', leagues);
+            state.leagues = leagues;
+            displayLeagues(leagues);
         })
         .catch(error => {
             console.error('Error loading leagues:', error);
             showError('Failed to load leagues');
+            document.getElementById('leagues-list').innerHTML = '<div class="empty-state"><p>Error loading leagues</p></div>';
         });
 }
 

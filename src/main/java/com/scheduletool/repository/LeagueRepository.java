@@ -11,8 +11,9 @@ import java.util.List;
 public interface LeagueRepository extends JpaRepository<League, Integer> {
     List<League> findByActiveTrue();
     List<League> findBySport(Sport sport);
+    List<League> findBySportId(Integer sportId);
+    List<League> findBySportIdAndActive(Integer sportId, Boolean active);
     List<League> findBySportAndActive(Sport sport, Boolean active);
     League findByName(String name);
-    League findByAbbreviation(String abbreviation);
 }
 
