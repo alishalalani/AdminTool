@@ -1,0 +1,279 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package scheduletool.table;
+
+import gsutils.Debug;
+import gsutils.MSSQL;
+import gsutils.data.Category;
+import gsutils.data.Event;
+import gsutils.data.Event_Item;
+import gsutils.data.Event_Key;
+import gsutils.data.Event_Time;
+import gsutils.data.League;
+import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.TreeMap;
+import scheduletool.Main;
+
+/**
+ *
+ * @author samla
+ */
+public class Record
+    {
+    static String class_name = "CategoriesRecord";
+    //---------------------------------------------------------------------------------------------
+    private int            schedule_id;
+    private int            category_id;
+    private int            event_id;
+    private int            category_league_id;
+    private int            category_sequence;
+    private LocalDate      category_date;
+    private LocalDate      category_end_date;
+    private String         category_header;
+    private LocalDate      event_date;
+    private int            event_league_id;
+    private int            event_number;
+    private int            event_item_id;
+    private int            event_item_sequence;
+    private String         league_team_name;
+    private String         league_prop_name;
+    private String         pitcher_name;
+    //---------------------------------------------------------------------------------------------
+    static public final TreeMap <RecordKey, Record> records             = new TreeMap <> (); // key is Event ID
+    static public final TreeMap <Integer, Category        > categories_by_ID    = new TreeMap <> (); // key is Category ID
+    static public final TreeMap <Integer, Event           > events              = new TreeMap <> (); // key is Event ID
+    static public final TreeMap <Integer, Event_Item      > event_items         = new TreeMap <> (); // key is Event_Item ID
+    static public final TreeMap <Integer, String          > team_names          = new TreeMap <> (); // key is Event_Item ID
+    static public final TreeMap <Integer, String          > pitchers            = new TreeMap <> (); // key is Event_Item ID
+    //---------------------------------------------------------------------------------------------
+    static public void read_table (int schedule_id)
+        {
+        if (Debug.debug)
+            Debug.print ("Reading table...");
+        String sql =   "SELECT sce.schedule_id"
+                   + "\n     , sce.category_id"
+                   + "\n     , sce.event_id"
+                   + "\n     , sce.category_sequence"
+                   + "\n     , c.date         AS category_date"
+                   + "\n     , c.end_date     AS category_end_date"
+                   + "\n     , c.header       AS category_header"
+                   + "\n     , c.league_id    AS category_league_id"
+                   + "\n     , e.league_id    AS event_league_id"
+                   + "\n     , e.date         AS event_date"
+                   + "\n     , et.time        AS event_time"
+                   + "\n     , et.TBA         AS event_time_TBA"
+                   + "\n     , e.number       AS event_number"
+                   + "\n     , ei.id          AS event_item_id"
+                   + "\n     , ei.sequence    AS event_item_sequence"
+                   + "\n     , lt.name        AS league_team_name"
+                   + "\n     , lprop.prop     AS league_prop_name"
+                   + "\n     , p.display_name AS pitcher_name"
+                   + "\n  FROM Schedule_Category_Event AS sce"
+                   + "\n  JOIN Category   AS c  ON c.id = sce.category_id"
+                   + "\n  JOIN League     AS cl ON cl.id = c.league_id"
+                   + "\n  JOIN Event      AS e  ON e.id = sce.event_id"
+                   + "\n  JOIN League     AS el ON el.id = e.league_id"
+                   + "\n  JOIN Event_Time AS et ON et.event_id = e.id"
+                   + "\n  JOIN Event_Item AS ei ON ei.event_id = e.id"
+                + "	  LEFT OUTER JOIN Event_Item_League_Team		AS eilt		ON eilt.event_item_id = ei.id AND eilt.timestamp = (SELECT MAX(timestamp) FROM Event_Item_League_Team AS eilt1 WHERE eilt1.event_item_id = ei.id)\n" +
+"	  LEFT OUTER JOIN (SELECT event_item_id, count(*) AS ltcount FROM Event_Item_League_Team GROUP BY event_item_id) AS eiltc ON eiltc.event_item_id = ei.id\n" +
+"	  LEFT OUTER JOIN League_Team					AS lt		ON lt.id = eilt.league_team_id\n" +
+"	  LEFT OUTER JOIN Event_Item_League_Team_Player	AS eiltp	ON eiltp.event_item_league_team_id = eilt.id AND eiltp.league_position_id = 1 AND eiltp.timestamp = (SELECT MAX(timestamp) FROM Event_Item_League_Team_Player AS eiltp1 WHERE eiltp1.event_item_league_team_id = eilt.id AND eiltp1.league_position_id = 1)\n" +
+"	  LEFT OUTER JOIN (SELECT event_item_league_team_id, count(*) AS pcount FROM Event_Item_League_Team_Player GROUP BY event_item_league_team_id, league_position_id HAVING league_position_id = 1) AS eiltpc ON eiltpc.event_item_league_team_id = eilt.id\n" +
+"	  LEFT OUTER JOIN League_Team_Player			AS ltp		ON ltp.id = eiltp.league_team_player_id\n" +
+"	  LEFT OUTER JOIN League_Player					AS lp		ON lp.id = ltp.league_player_id\n" +
+"	  LEFT OUTER JOIN Player						AS p		ON p.id = lp.player_id"
+//                   + "\n  LEFT OUTER JOIN Event_Item_League_Team        AS eilt  ON eilt.event_item_id = ei.id AND eilt.timestamp = (SELECT MAX(timestamp) FROM Event_Item_League_Team AS eilt1 WHERE eilt1.event_item_id = ei.id)"
+//                   + "\n  LEFT OUTER JOIN League_Team                   AS lt    ON lt.id = eilt.league_team_id"
+//                   + "\n  LEFT OUTER JOIN Event_Item_League_Team_Player AS eiltp ON eiltp.event_item_league_team_id = eilt.id and league_position_id = 1 AND eiltp.timestamp = (SELECT MAX(timestamp) FROM Event_Item_League_Team_Player AS eiltp1 WHERE eiltp1.event_item_league_team_id = eilt.id AND eiltp1.league_position_id = 1)"
+//                   + "\n  LEFT OUTER JOIN League_Team_Player            AS ltp   ON ltp.league_team_id = lt.id"
+//                   + "\n  LEFT OUTER JOIN League_Player                 AS lp    ON lp.id = ltp.league_player_id"
+//                   + "\n  LEFT OUTER JOIN Player                        AS p     ON p.id = lp.player_id"
+                   + "\n  LEFT OUTER JOIN Event_Item_League_Prop        AS eilp  ON eilp.event_item_id = ei.id"
+                   + "\n  LEFT OUTER JOIN League_Prop                   AS lprop ON lprop.id = eilp.league_prop_id"
+                   + "\n WHERE sce.schedule_id = " + schedule_id
+                   + "\n   AND (e.extension IS NULL OR e.extension = 0)"
+                   + "\n ORDER BY sce.category_sequence, e.number, ei.sequence"
+                   ;
+        try
+            {
+            Debug.print ("sql>>>\n" + sql + "\n<<<");
+            ResultSet rs = Main.db.executeQuery (sql);
+            if (rs != null)
+                {
+                records.clear ();
+                while (rs.next ())
+                    {
+                    Record record = new Record ();
+                    record.schedule_id         = rs.getInt    ("schedule_id");
+                    record.category_id         = rs.getInt    ("category_id");
+                    record.category_league_id  = rs.getInt    ("category_league_id");
+                    record.event_id            = rs.getInt    ("event_id");
+                    record.category_sequence   = rs.getInt    ("category_sequence");
+                    record.category_date       = rs.getDate   ("category_date").toLocalDate ();
+                    Date end_date = rs.getDate   ("category_end_date");
+                    record.category_end_date   = (end_date == null ? null : end_date.toLocalDate ());
+                    record.category_header     = rs.getString ("category_header");
+                    record.event_date          = rs.getDate   ("event_date").toLocalDate ();
+
+                    record.event_league_id     = rs.getInt    ("event_league_id");
+                    record.event_number        = rs.getInt    ("event_number");
+                    record.event_item_id       = rs.getInt    ("event_item_id");
+                    record.event_item_sequence = rs.getInt    ("event_item_sequence");
+                    record.league_team_name    = rs.getString ("league_team_name");
+                    record.league_prop_name    = rs.getString ("league_prop_name");
+                    record.pitcher_name        = rs.getString ("pitcher_name");
+
+                    League league = League.get_league (record.category_league_id);
+                    RecordKey record_key = new RecordKey (league.getSport_id (), league.getId (), record.category_id, record.category_date, record.event_date, record.event_number, record.event_item_sequence);
+                    records.put (record_key, record);
+
+                    Category category = categories_by_ID.get (record.category_id);
+                    if (category == null)
+                        category = new Category ();
+                    category.setId       (record.category_id);
+                    category.setDate     (record.category_date);
+                    category.setSequence (record.category_sequence);
+                    category.setHeader   (record.category_header);
+                    categories_by_ID.put (category.getId (), category);
+
+                    Event event = events.get (record.event_id);
+                    if (event == null)
+                        event = new Event ();
+                    event.setId     (record.event_id);
+                    event.setDate   (record.event_date);
+                    event.setNumber (record.event_number);
+
+                    Timestamp time_timestamp = rs.getTimestamp ("event_time");
+                    if (time_timestamp != null)
+                        {
+                        Event_Time event_time = new Event_Time ();
+                        event_time.setTime  (OffsetDateTime.ofInstant (time_timestamp.toInstant (), ZoneOffset.UTC));
+                        event_time.setTBA   (rs.getBoolean ("event_time_TBA"));
+                        event.setEvent_time (event_time);
+                        }
+
+                    events.put (event.getId (), event);
+                    category.getEvents ().put (new Event_Key (event), event);
+
+                    Event_Item event_item = event_items.get (record.event_item_id);
+                    if (event_item == null)
+                        event_item = new Event_Item ();
+                    event_item.setId (record.event_item_id);
+                    event_item.setSequence (record.event_item_sequence);
+                    event_items.put (event_item.getId (), event_item);
+                    event.getEvent_items ().put (event_item.getSequence (), event_item);
+                    
+                    if (record.league_team_name != null)
+                        {
+                        team_names.put (event_item.getId (), record.league_team_name);
+                        if (record.pitcher_name != null)
+                            pitchers.put (event_item.getId (), record.pitcher_name);
+                        }
+                    else if (record.league_prop_name != null)
+                        team_names.put (event_item.getId (), record.league_prop_name);
+                    }
+                }
+            MSSQL.close_rs (rs);
+            }
+        catch (Exception e)
+            {
+            System.out.println (function + ":  " + e);
+            e.printStackTrace ();
+            }
+        if (Debug.debug)
+            System.out.println (function + ":  Done reading table...(" + records.size () + ") records");
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getSchedule_id ()
+        {
+        return schedule_id;
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getCategory_id ()
+        {
+        return category_id;
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getEvent_id ()
+        {
+        return event_id;
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getCategory_league_id ()
+        {
+        return category_league_id;
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getCategory_sequence ()
+        {
+        return category_sequence;
+        }
+    //---------------------------------------------------------------------------------------------
+    public LocalDate getCategory_date ()
+        {
+        return category_date;
+        }
+    //---------------------------------------------------------------------------------------------
+    public LocalDate getCategory_end_date ()
+        {
+        return category_end_date;
+        }
+    //---------------------------------------------------------------------------------------------
+    public String getCategory_header ()
+        {
+        return category_header;
+        }
+    //---------------------------------------------------------------------------------------------
+    public LocalDate getEvent_date ()
+        {
+        return event_date;
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getEvent_league_id ()
+        {
+        return event_league_id;
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getEvent_number ()
+        {
+        return event_number;
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getEvent_item_id ()
+        {
+        return event_item_id;
+        }
+    //---------------------------------------------------------------------------------------------
+    public int getEvent_item_sequence ()
+        {
+        return event_item_sequence;
+        }
+    //---------------------------------------------------------------------------------------------
+    public String getLeague_team_name ()
+        {
+        return league_team_name;
+        }
+    //---------------------------------------------------------------------------------------------
+    public String getLeague_prop_name ()
+        {
+        return league_prop_name;
+        }
+    //---------------------------------------------------------------------------------------------
+    static public Category get_category_by_id (int category_id)
+        {
+        return (categories_by_ID.get (category_id));
+        }
+    //---------------------------------------------------------------------------------------------
+    static public Event get_event_by_id (int event_id)
+        {
+        return (events.get (event_id));
+        }
+    }

@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="period_buttonGroup">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="line_type_buttonGroup">
+    </Component>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="total_points_TextField" linkSize="1" min="-2" pref="64" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="total_over_TextField" linkSize="1" min="-2" pref="64" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="total_under_TextField" linkSize="1" min="-2" pref="68" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="save_Button" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="date_Label" max="32767" attributes="0"/>
+                                      <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="away_game_number_Label" alignment="0" min="-2" pref="50" max="-2" attributes="0"/>
+                                                  <Component id="home_game_number_Label" alignment="0" min="-2" pref="50" max="-2" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                  <Component id="away_team_Label" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="home_team_Label" alignment="0" min="-2" pref="99" max="-2" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                          <Component id="sportsbook_Panel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                          <Component id="home_moneyline_TextField" linkSize="1" max="32767" attributes="0"/>
+                                          <Component id="moneylines_Label" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="away_moneyline_TextField" linkSize="1" alignment="1" min="-2" pref="70" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="spread_Label" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="away_spread_TextField" linkSize="1" min="-2" pref="64" max="-2" attributes="0"/>
+                                                  <Component id="home_spread_TextField" linkSize="1" alignment="0" min="-2" pref="64" max="-2" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="price_Label" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="away_price_TextField" linkSize="1" min="-2" pref="64" max="-2" attributes="0"/>
+                                                  <Component id="home_price_TextField" linkSize="1" alignment="0" min="-2" pref="64" max="-2" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Component id="home_team_total_points_TextField" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="home_team_total_over_TextField" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="home_team_total_under_TextField" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                                      <Component id="home_string_TextField" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Group type="103" groupAlignment="0" attributes="0">
+                                                          <Group type="102" alignment="0" attributes="0">
+                                                              <Component id="away_team_total_points_TextField" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                              <EmptySpace max="-2" attributes="0"/>
+                                                              <Component id="away_team_total_over_TextField" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                              <EmptySpace max="-2" attributes="0"/>
+                                                              <Component id="away_team_total_under_TextField" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                          </Group>
+                                                          <Component id="team_totals_Label" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                                      <Group type="103" groupAlignment="0" attributes="0">
+                                                          <Component id="string_Label" min="-2" max="-2" attributes="0"/>
+                                                          <Component id="away_string_TextField" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                      </Group>
+                                                  </Group>
+                                              </Group>
+                                          </Group>
+                                          <Component id="clear_all_lines_Button" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Component id="period_Panel" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Component id="total_Label" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="71" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="period_Panel" max="32767" attributes="0"/>
+                  <Component id="sportsbook_Panel" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="spread_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="price_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="team_totals_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="moneylines_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="string_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="away_spread_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="away_price_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="away_team_total_points_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="away_team_total_over_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="away_team_total_under_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="away_string_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="home_spread_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="home_price_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="home_team_total_points_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="home_team_total_over_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="home_team_total_under_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="home_string_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="date_Label" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="away_team_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="away_moneyline_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="away_game_number_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="home_moneyline_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="home_team_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="home_game_number_Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+              <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+              <Component id="total_Label" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="total_points_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="total_over_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="total_under_TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="save_Button" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="clear_all_lines_Button" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="period_Panel">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Period"/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="game_RadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="h1_RadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="h2_RadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="q1_RadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="q2_RadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="q3_RadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="q4_RadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace pref="61" max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="game_RadioButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="h1_RadioButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="h2_RadioButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="q1_RadioButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="q2_RadioButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="q3_RadioButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="q4_RadioButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JRadioButton" name="game_RadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="period_buttonGroup"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Game"/>
+            <Property name="actionCommand" type="java.lang.String" value="0"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="period_RadioButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="h1_RadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="period_buttonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="1st H"/>
+            <Property name="actionCommand" type="java.lang.String" value="1"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="period_RadioButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="h2_RadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="period_buttonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="2nd H"/>
+            <Property name="actionCommand" type="java.lang.String" value="2"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="period_RadioButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="q1_RadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="period_buttonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="1st Q"/>
+            <Property name="actionCommand" type="java.lang.String" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="period_RadioButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="q2_RadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="period_buttonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="2nd Q"/>
+            <Property name="actionCommand" type="java.lang.String" value="4"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="period_RadioButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="q3_RadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="period_buttonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="3rd Q"/>
+            <Property name="actionCommand" type="java.lang.String" value="5"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="period_RadioButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="q4_RadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="period_buttonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="4th Q"/>
+            <Property name="actionCommand" type="java.lang.String" value="6"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="period_RadioButtonActionPerformed"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JButton" name="save_Button">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Save"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="save_ButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="moneylines_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Moneylines"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="away_moneyline_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="home_moneyline_TextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="spread_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Spread"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="away_spread_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="away_price_TextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="price_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Price"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="home_price_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="home_spread_TextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="away_team_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="away-team"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="home_team_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="home-team"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="away_team_total_points_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="home_team_total_points_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="away_team_total_over_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="away_team_total_under_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="home_team_total_over_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="home_team_total_under_TextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="team_totals_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Team-totals"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="total_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Total"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="total_points_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="total_over_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="total_under_TextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="away_game_number_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="away#"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="home_game_number_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="home#"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="date_Label">
+    </Component>
+    <Container class="javax.swing.JPanel" name="sportsbook_Panel">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Sportsbook"/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="sportsbook_ScrollPane" pref="143" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="sportsbook_ScrollPane" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JScrollPane" name="sportsbook_ScrollPane">
+          <AuxValues>
+            <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+          </AuxValues>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Component class="javax.swing.JList" name="sportsbook_List">
+              <Properties>
+                <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
+                  <StringArray count="0"/>
+                </Property>
+                <Property name="selectionMode" type="int" value="0"/>
+              </Properties>
+              <Events>
+                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sportsbook_ListMousePressed"/>
+                <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="sportsbook_ListValueChanged"/>
+              </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+              </AuxValues>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JTextField" name="away_string_TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="home_string_TextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="string_Label">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="String"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="clear_all_lines_Button">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Clear all lines"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clear_all_lines_ButtonActionPerformed"/>
+      </Events>
+    </Component>
+  </SubComponents>
+</Form>
