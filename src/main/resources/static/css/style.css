@@ -756,7 +756,6 @@ body {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     max-width: 500px;
     width: 90%;
-    max-height: 80vh;
     display: flex;
     flex-direction: column;
     animation: slideUp 0.3s;
@@ -775,8 +774,8 @@ body {
 
 .modal-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 12px;
     padding: 20px 24px;
     border-bottom: 1px solid var(--border);
 }
@@ -786,6 +785,7 @@ body {
     font-size: 18px;
     font-weight: 600;
     color: var(--text-primary);
+    flex: 1;
 }
 
 .modal-close {
@@ -811,7 +811,27 @@ body {
 
 .modal-body {
     padding: 20px 24px;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tbd-button {
+    padding: 8px 20px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tbd-button:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 }
 
 .team-search-input {
@@ -822,7 +842,6 @@ body {
     font-size: 14px;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    margin-bottom: 16px;
     transition: all 0.2s;
 }
 
@@ -833,13 +852,11 @@ body {
 }
 
 .team-list {
-    max-height: 400px;
-    overflow-y: auto;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     background: var(--bg-secondary);
-    display: flex;
-    flex-direction: column;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .team-item {

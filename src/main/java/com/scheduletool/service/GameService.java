@@ -72,6 +72,16 @@ public class GameService {
 
             // Step 5: For each participant, get the team information
             for (Participant participant : participants) {
+                // Use sort_order to determine home/away: 0 = away, 1 = home
+                boolean isHome = (participant.getSortOrder() != null && participant.getSortOrder() == 1);
+
+                // Always set participant ID, even if no team is assigned
+                if (isHome) {
+                    game.setHomeParticipantId(participant.getId());
+                } else {
+                    game.setAwayParticipantId(participant.getId());
+                }
+
                 ParticipantLeagueTeam plt = participantLeagueTeamRepository.findFirstByParticipantId(participant.getId());
                 if (plt != null) {
                     LeagueTeam leagueTeam = leagueTeamRepository.findById(plt.getLeagueTeamId()).orElse(null);
@@ -79,17 +89,12 @@ public class GameService {
                         // Get the actual team name from the team table
                         Team team = teamRepository.findById(leagueTeam.getTeamId()).orElse(null);
                         if (team != null) {
-                            // Use sort_order to determine home/away: 0 = away, 1 = home
-                            boolean isHome = (participant.getSortOrder() != null && participant.getSortOrder() == 1);
-
                             if (isHome) {
                                 game.setHomeTeam(team.getName());
                                 game.setHomeTeamId(team.getId());
-                                game.setHomeParticipantId(participant.getId());
                             } else {
                                 game.setAwayTeam(team.getName());
                                 game.setAwayTeamId(team.getId());
-                                game.setAwayParticipantId(participant.getId());
                             }
                         }
                     }
@@ -157,6 +162,17 @@ public class GameService {
         plt.setTimestamp(java.time.OffsetDateTime.now());
 
         return participantLeagueTeamRepository.save(plt);
+    }
+
+    /**
+     * Clear participant team (set to TBD)
+     * @param participantId The participant ID
+     */
+    public void clearParticipantTeam(Integer participantId) {
+        ParticipantLeagueTeam plt = participantLeagueTeamRepository.findFirstByParticipantId(participantId);
+        if (plt != null) {
+            participantLeagueTeamRepository.delete(plt);
+        }
     }
 
     /**

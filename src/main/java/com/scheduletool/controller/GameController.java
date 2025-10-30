@@ -82,6 +82,21 @@ public class GameController {
     }
 
     /**
+     * Clear participant team (set to TBD)
+     * @param participantId The participant ID
+     * @return Success response
+     */
+    @DeleteMapping("/participant/{participantId}/team")
+    public ResponseEntity<Void> clearParticipantTeam(@PathVariable Integer participantId) {
+        try {
+            gameService.clearParticipantTeam(participantId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
      * Get teams for a specific league
      * @param leagueId The league ID
      * @return List of teams with their league team IDs

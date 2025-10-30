@@ -704,6 +704,7 @@ function showTeamSelectionModal(teams, participantId) {
         <div class="modal-content team-selection-modal">
             <div class="modal-header">
                 <h3>Select Team</h3>
+                <button class="tbd-button" onclick="selectTBD(${participantId})">TBD</button>
                 <button class="modal-close" onclick="closeTeamModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -779,6 +780,30 @@ async function selectTeam(participantId, leagueTeamId) {
     } catch (error) {
         console.error('Error updating team:', error);
         showError('Failed to update team');
+    }
+}
+
+// Select TBD
+async function selectTBD(participantId) {
+    try {
+        // Delete the participant's team assignment by setting leagueTeamId to null
+        const response = await fetch(`${API_BASE_URL}/games/participant/${participantId}/team`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            closeTeamModal();
+            showSuccess('Team set to TBD');
+            // Reload events for the current group
+            if (state.selectedGroup) {
+                loadEvents(state.selectedGroup.id);
+            }
+        } else {
+            showError('Failed to set team to TBD');
+        }
+    } catch (error) {
+        console.error('Error setting team to TBD:', error);
+        showError('Failed to set team to TBD');
     }
 }
 
