@@ -79,8 +79,10 @@ public class GameService {
                         // Get the actual team name from the team table
                         Team team = teamRepository.findById(leagueTeam.getTeamId()).orElse(null);
                         if (team != null) {
-                            // Determine if this is home or away team based on participant.home
-                            if (participant.getHome() != null && participant.getHome() == 1) {
+                            // Use sort_order to determine home/away: 0 = away, 1 = home
+                            boolean isHome = (participant.getSortOrder() != null && participant.getSortOrder() == 1);
+
+                            if (isHome) {
                                 game.setHomeTeam(team.getName());
                                 game.setHomeTeamId(team.getId());
                                 game.setHomeParticipantId(participant.getId());
