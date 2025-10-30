@@ -429,6 +429,15 @@ function displayEvents(games) {
     }
 
     container.innerHTML = games.map(game => {
+        // Debug logging
+        console.log('Game data:', {
+            eventId: game.eventId,
+            score1: game.score1,
+            score2: game.score2,
+            timer: game.timer,
+            period: game.period
+        });
+
         // Format the time - check TBA first!
         let timeDisplay = 'TBD';
         if (game.tba === 1 || game.tba === true) {
@@ -442,6 +451,16 @@ function displayEvents(games) {
             });
         }
 
+        // Build score display
+        const hasScore = game.score1 !== null || game.score2 !== null;
+        const score1Display = game.score1 !== null ? game.score1 : '-';
+        const score2Display = game.score2 !== null ? game.score2 : '-';
+
+        // Build status display - timer and period come from backend
+        const hasStatus = game.timer || game.period;
+        const timerDisplay = game.timer || '';
+        const periodDisplay = game.period || '';
+
         return `
             <div class="event-card" data-event-id="${game.eventId}" data-league-id="${game.leagueId || ''}">
                 <div class="event-teams">
@@ -453,7 +472,7 @@ function displayEvents(games) {
                              title="Click to edit team">
                             ${game.awayTeam || 'TBD'}
                         </div>
-                        <div class="team-score"></div>
+                        ${hasScore ? `<div class="team-score">${score1Display}</div>` : ''}
                         <div class="event-time editable-time"
                              onclick="editTime(this, ${game.eventId}, '${game.time || ''}', ${game.tba || 0})"
                              title="Click to edit time">
@@ -468,10 +487,16 @@ function displayEvents(games) {
                              title="Click to edit team">
                             ${game.homeTeam || 'TBD'}
                         </div>
-                        <div class="team-score"></div>
+                        ${hasScore ? `<div class="team-score">${score2Display}</div>` : ''}
                         <div class="event-number">#${game.number || game.eventId}</div>
                     </div>
                 </div>
+                ${hasStatus ? `
+                <div class="game-status-row">
+                    ${timerDisplay ? `<div class="status-item"><span class="status-label">Time:</span> ${timerDisplay}</div>` : ''}
+                    ${periodDisplay ? `<div class="status-item"><span class="status-label">Period:</span> ${periodDisplay}</div>` : ''}
+                </div>
+                ` : ''}
             </div>
         `;
     }).join('');

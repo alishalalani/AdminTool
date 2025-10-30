@@ -21,7 +21,13 @@ public class GameDTO {
     private Integer homeTeamId;
     private Integer homeParticipantId;
     private Integer leagueId;
-    
+
+    // Score information
+    private Integer score1;  // Away score
+    private Integer score2;  // Home score
+    private String timer;    // Game clock (from status0 column)
+    private String period;   // Game period (from status1 column)
+
     public GameDTO() {
     }
     
@@ -128,6 +134,38 @@ public class GameDTO {
         this.leagueId = leagueId;
     }
 
+    public Integer getScore1() {
+        return score1;
+    }
+
+    public void setScore1(Integer score1) {
+        this.score1 = score1;
+    }
+
+    public Integer getScore2() {
+        return score2;
+    }
+
+    public void setScore2(Integer score2) {
+        this.score2 = score2;
+    }
+
+    public String getTimer() {
+        return timer;
+    }
+
+    public void setTimer(String timer) {
+        this.timer = timer;
+    }
+
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
+
     @Override
     public String toString() {
         return "GameDTO{" +
@@ -137,6 +175,8 @@ public class GameDTO {
                 ", time=" + time +
                 ", awayTeam='" + awayTeam + '\'' +
                 ", homeTeam='" + homeTeam + '\'' +
+                ", score1=" + score1 +
+                ", score2=" + score2 +
                 '}';
     }
 }

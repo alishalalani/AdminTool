@@ -30,7 +30,19 @@ public class EventScore {
     
     @Column(name = "timestamp")
     private OffsetDateTime timestamp;
-    
+
+    @Column(name = "score1")
+    private Integer score1;
+
+    @Column(name = "score2")
+    private Integer score2;
+
+    @Column(name = "timer")
+    private String timer;
+
+    @Column(name = "period")
+    private String period;
+
     @OneToMany(mappedBy = "eventScore", cascade = CascadeType.ALL)
     private List<EventScoreItem> eventScoreItems;
     
@@ -82,12 +94,46 @@ public class EventScore {
     public void setEventScoreItems(List<EventScoreItem> eventScoreItems) {
         this.eventScoreItems = eventScoreItems;
     }
-    
+
+    public Integer getScore1() {
+        return score1;
+    }
+
+    public void setScore1(Integer score1) {
+        this.score1 = score1;
+    }
+
+    public Integer getScore2() {
+        return score2;
+    }
+
+    public void setScore2(Integer score2) {
+        this.score2 = score2;
+    }
+
+    public String getTimer() {
+        return timer;
+    }
+
+    public void setTimer(String timer) {
+        this.timer = timer;
+    }
+
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
+
     @Override
     public String toString() {
         return "EventScore{" +
                 "id=" + id +
                 ", event=" + (event != null ? event.getId() : "null") +
+                ", score1=" + score1 +
+                ", score2=" + score2 +
                 '}';
     }
 }

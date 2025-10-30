@@ -34,6 +34,9 @@ public class GameService {
 
     @Autowired
     private EventTimeRepository eventTimeRepository;
+
+    @Autowired
+    private EventScoreRepository eventScoreRepository;
     
     /**
      * Get all games for a specific group
@@ -100,10 +103,19 @@ public class GameService {
                     }
                 }
             }
-            
+
+            // Step 6: Get the latest score for this event
+            EventScore latestScore = eventScoreRepository.findTopByEventOrderByTimestampDesc(event);
+            if (latestScore != null) {
+                game.setScore1(latestScore.getScore1());
+                game.setScore2(latestScore.getScore2());
+                game.setTimer(latestScore.getTimer());   // Gets from status0 column
+                game.setPeriod(latestScore.getPeriod()); // Gets from status1 column
+            }
+
             games.add(game);
         }
-        
+
         return games;
     }
 
