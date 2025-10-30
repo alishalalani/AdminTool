@@ -511,8 +511,8 @@ body {
     background: var(--bg-primary);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 20px;
-    margin-bottom: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
     transition: all 0.2s;
     cursor: pointer;
 }
@@ -532,7 +532,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+}
+
+.group-title-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex: 1;
 }
 
 .group-title {
