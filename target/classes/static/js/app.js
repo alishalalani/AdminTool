@@ -1,4 +1,4 @@
-// OddsLogic Schedule Manager - Modern 2025 UI
+// Intel Odds Schedule Manager - Modern 2025 UI
 
 const API_BASE_URL = '/api';
 
@@ -16,7 +16,7 @@ let state = {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('OddsLogic Schedule Manager initialized');
+    console.log('Intel Odds Schedule Manager initialized');
     initializeDatePicker();
     loadSports();
     checkConnection();
@@ -87,20 +87,33 @@ function loadSports() {
 }
 
 function displaySports(sports) {
-    const sportsList = document.getElementById('sports-list');
+    const sportSelect = document.getElementById('sport-select');
 
     if (sports.length === 0) {
-        sportsList.innerHTML = '<div class="empty-state"><p>No sports found</p></div>';
+        sportSelect.innerHTML = '<option value="">No sports available</option>';
         return;
     }
 
-    sportsList.innerHTML = sports.map(sport => `
-        <div class="sport-item ${state.selectedSport && state.selectedSport.id === sport.id ? 'active' : ''}"
-             onclick="selectSport(${sport.id})">
-            <span>${sport.name}</span>
-            <span class="item-badge">${sport.abbreviation || ''}</span>
-        </div>
-    `).join('');
+    sportSelect.innerHTML = '<option value="">Select Sport...</option>' +
+        sports.map(sport => `
+            <option value="${sport.id}">${sport.name} ${sport.abbreviation ? '(' + sport.abbreviation + ')' : ''}</option>
+        `).join('');
+
+    // Add change event listener
+    sportSelect.onchange = function() {
+        const sportId = parseInt(this.value);
+        if (sportId) {
+            selectSport(sportId);
+        } else {
+            // Clear selection
+            state.selectedSport = null;
+            state.selectedLeague = null;
+            state.selectedCategory = null;
+            document.getElementById('leagues-list').innerHTML = '<div class="empty-state"><p>Select a sport to view leagues</p></div>';
+            document.getElementById('categories-container').innerHTML = '<div class="empty-state"><p>Select a league to view categories</p></div>';
+            document.getElementById('events-container').innerHTML = '<div class="empty-state"><p>Select a category to view games</p></div>';
+        }
+    };
 }
 
 function selectSport(sportId) {
@@ -111,7 +124,10 @@ function selectSport(sportId) {
     state.selectedLeague = null;
     state.selectedCategory = null;
 
-    displaySports(state.sports);
+    // Update dropdown selection
+    const sportSelect = document.getElementById('sport-select');
+    sportSelect.value = sportId;
+
     loadLeagues(sportId);
     clearCategories();
     clearEvents();

@@ -46,7 +46,7 @@ public class ScheduleClient extends Thread
     //---------------------------------------------------------------------------------------------
     //static public        String      host = "localhost";
     static public        String      host = "samlalani.freeddns.org";
-    static public String             host_prod = "odds.oddslogic.com";
+    static public String             host_prod = "odds.intelodds.com";
     //static public String             host_dev  = "192.168.1.74";
     //static public String             host_dev  = "localhost";
     static public String             host_dev  = "samlalani.freeddns.org";

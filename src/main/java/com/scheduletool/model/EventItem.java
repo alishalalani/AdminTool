@@ -9,6 +9,7 @@ import java.util.List;
  * Replaces gsutils.data.Event_Item
  */
 @Entity
+
 @Table(name = "event_item")
 public class EventItem {
     

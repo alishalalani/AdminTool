@@ -1,4 +1,4 @@
-/* Modern 2025 UI - OddsLogic Schedule Manager */
+/* Modern 2025 UI - Intel Odds Schedule Manager */
 
 :root {
     --primary: #2563eb;
@@ -89,6 +89,45 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
+}
+
+.sport-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+}
+
+.sport-selector:hover {
+    border-color: var(--border-hover);
+}
+
+.sport-selector .icon {
+    width: 18px;
+    height: 18px;
+    color: var(--text-secondary);
+    stroke-width: 2;
+}
+
+.sport-dropdown {
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    outline: none;
+    font-family: inherit;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.sport-dropdown option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 .date-selector {

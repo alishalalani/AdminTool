@@ -68,7 +68,7 @@ public class LoginDialog extends javax.swing.JDialog
 
             URL url = new URL ((development
                                  ? "http://"  + ScheduleClient.host_dev  + "/OLtest"
-                                 : "https://" + ScheduleClient.host_prod + "/OddsLogic")
+                                 : "https://" + ScheduleClient.host_prod + "/IntelOdds")
                                + "/sources/php/tools_login.php");
 
             HttpURLConnection url_connection = (HttpURLConnection) url.openConnection ();
