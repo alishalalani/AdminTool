@@ -429,17 +429,17 @@ function displayEvents(games) {
     }
 
     container.innerHTML = games.map(game => {
-        // Format the time
+        // Format the time - check TBA first!
         let timeDisplay = 'TBD';
-        if (game.time) {
+        if (game.tba === 1 || game.tba === true) {
+            timeDisplay = 'TBA';
+        } else if (game.time) {
             const gameTime = new Date(game.time);
             timeDisplay = gameTime.toLocaleTimeString('en-US', {
                 hour: 'numeric',
                 minute: '2-digit',
                 hour12: true
             });
-        } else if (game.tba) {
-            timeDisplay = 'TBA';
         }
 
         return `
@@ -615,36 +615,126 @@ function showSuccess(message) {
 
 // Edit time function
 async function editTime(element, eventId, currentTime, currentTba) {
-    const timeInput = prompt('Enter new time (HH:MM AM/PM) or "TBA":', currentTime ? new Date(currentTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'TBA');
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
 
-    if (timeInput === null) return; // User cancelled
+    // Parse current time if it exists
+    let hour = '12';
+    let minute = '00';
+    let ampm = 'PM';
 
-    let time, tba;
+    if (currentTime && !currentTba) {
+        const date = new Date(currentTime);
+        let h = date.getHours();
+        const m = date.getMinutes();
 
-    if (timeInput.toUpperCase() === 'TBA') {
-        tba = 1;
-        time = new Date().toISOString(); // Use current time as placeholder
-    } else {
-        tba = 0;
-        // Parse the time input
-        try {
-            const today = new Date();
-            const [timePart, period] = timeInput.split(' ');
-            let [hours, minutes] = timePart.split(':').map(Number);
+        ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12;
+        h = h ? h : 12; // the hour '0' should be '12'
 
-            if (period && period.toUpperCase() === 'PM' && hours !== 12) {
-                hours += 12;
-            } else if (period && period.toUpperCase() === 'AM' && hours === 12) {
-                hours = 0;
-            }
-
-            today.setHours(hours, minutes, 0, 0);
-            time = today.toISOString();
-        } catch (error) {
-            showError('Invalid time format. Please use HH:MM AM/PM');
-            return;
-        }
+        hour = h.toString();
+        minute = m.toString().padStart(2, '0');
     }
+
+    modal.innerHTML = `
+        <div class="modal-content time-edit-modal">
+            <div class="modal-header">
+                <h3>Edit Time</h3>
+                <button class="undo-button" onclick="undoTimeChanges('${hour}', '${minute}', '${ampm}')">Undo Changes</button>
+                <button class="modal-close" onclick="closeTimeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="time-input-container">
+                    <input type="number"
+                           id="hour-input"
+                           class="time-number-input"
+                           value="${hour}"
+                           min="1"
+                           max="12"
+                           placeholder="HH">
+                    <span class="time-separator">:</span>
+                    <input type="number"
+                           id="minute-input"
+                           class="time-number-input"
+                           value="${minute}"
+                           min="0"
+                           max="59"
+                           placeholder="MM">
+                    <select id="ampm-select" class="ampm-select">
+                        <option value="AM" ${ampm === 'AM' ? 'selected' : ''}>AM</option>
+                        <option value="PM" ${ampm === 'PM' ? 'selected' : ''}>PM</option>
+                    </select>
+                </div>
+                <button class="tba-time-button" onclick="setTBA(${eventId})">Set as TBA</button>
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="saveTime(${eventId})">OK</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Focus on hour input
+    setTimeout(() => {
+        document.getElementById('hour-input').focus();
+        document.getElementById('hour-input').select();
+    }, 100);
+
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeTimeModal();
+        }
+    });
+
+    // Handle Enter key on inputs
+    ['hour-input', 'minute-input'].forEach(id => {
+        document.getElementById(id).addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveTime(eventId);
+            }
+        });
+    });
+
+    // Auto-format minute input to always be 2 digits
+    document.getElementById('minute-input').addEventListener('blur', (e) => {
+        const val = e.target.value;
+        if (val && val.length === 1) {
+            e.target.value = '0' + val;
+        }
+    });
+}
+
+// Save time from modal
+async function saveTime(eventId) {
+    const hour = parseInt(document.getElementById('hour-input').value);
+    const minute = parseInt(document.getElementById('minute-input').value);
+    const ampm = document.getElementById('ampm-select').value;
+
+    // Validate inputs
+    if (isNaN(hour) || hour < 1 || hour > 12) {
+        showError('Hour must be between 1 and 12');
+        return;
+    }
+
+    if (isNaN(minute) || minute < 0 || minute > 59) {
+        showError('Minute must be between 0 and 59');
+        return;
+    }
+
+    // Convert to 24-hour format
+    let hours24 = hour;
+    if (ampm === 'PM' && hour !== 12) {
+        hours24 = hour + 12;
+    } else if (ampm === 'AM' && hour === 12) {
+        hours24 = 0;
+    }
+
+    // Create ISO time string
+    const today = new Date();
+    today.setHours(hours24, minute, 0, 0);
+    const time = today.toISOString();
 
     try {
         const response = await fetch(`${API_BASE_URL}/games/event/${eventId}/time`, {
@@ -652,12 +742,12 @@ async function editTime(element, eventId, currentTime, currentTba) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ time, tba })
+            body: JSON.stringify({ time, tba: 0 })
         });
 
         if (response.ok) {
+            closeTimeModal();
             showSuccess('Time updated successfully');
-            // Reload events for the current group
             if (state.selectedGroup) {
                 loadEvents(state.selectedGroup.id);
             }
@@ -667,6 +757,55 @@ async function editTime(element, eventId, currentTime, currentTba) {
     } catch (error) {
         console.error('Error updating time:', error);
         showError('Failed to update time');
+    }
+}
+
+// Set time as TBA
+async function setTBA(eventId) {
+    console.log('setTBA called with eventId:', eventId);
+    try {
+        const payload = { time: new Date().toISOString(), tba: 1 };
+        console.log('Sending TBA request:', payload);
+
+        const response = await fetch(`${API_BASE_URL}/games/event/${eventId}/time`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        console.log('TBA response status:', response.status);
+
+        if (response.ok) {
+            closeTimeModal();
+            showSuccess('Time set to TBA');
+            if (state.selectedGroup) {
+                loadEvents(state.selectedGroup.id);
+            }
+        } else {
+            const errorText = await response.text();
+            console.error('TBA error response:', errorText);
+            showError('Failed to set time to TBA');
+        }
+    } catch (error) {
+        console.error('Error setting TBA:', error);
+        showError('Failed to set time to TBA: ' + error.message);
+    }
+}
+
+// Undo time changes
+function undoTimeChanges(originalHour, originalMinute, originalAmpm) {
+    document.getElementById('hour-input').value = originalHour;
+    document.getElementById('minute-input').value = originalMinute;
+    document.getElementById('ampm-select').value = originalAmpm;
+}
+
+// Close time modal
+function closeTimeModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
     }
 }
 

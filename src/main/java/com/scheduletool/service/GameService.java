@@ -136,8 +136,14 @@ public class GameService {
             eventTime = eventTimes.get(0);
         }
 
-        eventTime.setTime(time);
-        eventTime.setTba(tba);
+        // If TBA is set, clear the time; otherwise set the time and clear TBA
+        if (tba != null && tba == 1) {
+            eventTime.setTime(null);
+            eventTime.setTba(1);
+        } else {
+            eventTime.setTime(time);
+            eventTime.setTba(0);
+        }
         eventTime.setTimestamp(java.time.OffsetDateTime.now());
 
         return eventTimeRepository.save(eventTime);
