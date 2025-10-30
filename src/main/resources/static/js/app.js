@@ -444,18 +444,16 @@ function displayEvents(games) {
 
         return `
             <div class="event-card">
-                <div class="event-header">
-                    <div class="event-time">${timeDisplay}</div>
-                    <div class="event-number">#${game.number || game.eventId}</div>
-                </div>
                 <div class="event-teams">
                     <div class="team-row">
                         <div class="team-name">${game.awayTeam || 'TBD'}</div>
-                        <div class="team-score">-</div>
+                        <div class="team-score"></div>
+                        <div class="event-time">${timeDisplay}</div>
                     </div>
                     <div class="team-row">
                         <div class="team-name">${game.homeTeam || 'TBD'}</div>
-                        <div class="team-score">-</div>
+                        <div class="team-score"></div>
+                        <div class="event-number">#${game.number || game.eventId}</div>
                     </div>
                 </div>
             </div>

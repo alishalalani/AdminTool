@@ -622,7 +622,7 @@ body {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 16px;
+    padding: 12px;
     margin-bottom: 12px;
     transition: all 0.2s;
 }
@@ -632,38 +632,18 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-.event-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-.event-time {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-}
-
-.event-number {
-    font-size: 12px;
-    background: var(--bg-tertiary);
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    color: var(--text-secondary);
-}
-
 .event-teams {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .team-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
     align-items: center;
-    justify-content: space-between;
-    padding: 8px;
+    gap: 12px;
+    padding: 8px 12px;
     background: var(--bg-primary);
     border-radius: var(--radius-sm);
 }
@@ -672,12 +652,33 @@ body {
     font-size: 14px;
     font-weight: 500;
     color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .team-score {
     font-size: 16px;
     font-weight: 700;
     color: var(--primary);
+    min-width: 20px;
+    text-align: center;
+}
+
+.event-time {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.event-number {
+    font-size: 11px;
+    background: var(--bg-tertiary);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    white-space: nowrap;
 }
 
 /* Scrollbar Styling */
