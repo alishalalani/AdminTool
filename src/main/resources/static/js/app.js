@@ -443,15 +443,31 @@ function displayEvents(games) {
         }
 
         return `
-            <div class="event-card">
+            <div class="event-card" data-event-id="${game.eventId}" data-league-id="${game.leagueId || ''}">
                 <div class="event-teams">
                     <div class="team-row">
-                        <div class="team-name">${game.awayTeam || 'TBD'}</div>
+                        <div class="team-name editable-team"
+                             data-participant-id="${game.awayParticipantId || ''}"
+                             data-team-id="${game.awayTeamId || ''}"
+                             onclick="editTeam(this, ${game.leagueId}, ${game.awayParticipantId})"
+                             title="Click to edit team">
+                            ${game.awayTeam || 'TBD'}
+                        </div>
                         <div class="team-score"></div>
-                        <div class="event-time">${timeDisplay}</div>
+                        <div class="event-time editable-time"
+                             onclick="editTime(this, ${game.eventId}, '${game.time || ''}', ${game.tba || 0})"
+                             title="Click to edit time">
+                            ${timeDisplay}
+                        </div>
                     </div>
                     <div class="team-row">
-                        <div class="team-name">${game.homeTeam || 'TBD'}</div>
+                        <div class="team-name editable-team"
+                             data-participant-id="${game.homeParticipantId || ''}"
+                             data-team-id="${game.homeTeamId || ''}"
+                             onclick="editTeam(this, ${game.leagueId}, ${game.homeParticipantId})"
+                             title="Click to edit team">
+                            ${game.homeTeam || 'TBD'}
+                        </div>
                         <div class="team-score"></div>
                         <div class="event-number">#${game.number || game.eventId}</div>
                     </div>
@@ -595,4 +611,181 @@ function showError(message) {
 
 function showSuccess(message) {
     console.log('Success: ' + message);
+}
+
+// Edit time function
+async function editTime(element, eventId, currentTime, currentTba) {
+    const timeInput = prompt('Enter new time (HH:MM AM/PM) or "TBA":', currentTime ? new Date(currentTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'TBA');
+
+    if (timeInput === null) return; // User cancelled
+
+    let time, tba;
+
+    if (timeInput.toUpperCase() === 'TBA') {
+        tba = 1;
+        time = new Date().toISOString(); // Use current time as placeholder
+    } else {
+        tba = 0;
+        // Parse the time input
+        try {
+            const today = new Date();
+            const [timePart, period] = timeInput.split(' ');
+            let [hours, minutes] = timePart.split(':').map(Number);
+
+            if (period && period.toUpperCase() === 'PM' && hours !== 12) {
+                hours += 12;
+            } else if (period && period.toUpperCase() === 'AM' && hours === 12) {
+                hours = 0;
+            }
+
+            today.setHours(hours, minutes, 0, 0);
+            time = today.toISOString();
+        } catch (error) {
+            showError('Invalid time format. Please use HH:MM AM/PM');
+            return;
+        }
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/games/event/${eventId}/time`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ time, tba })
+        });
+
+        if (response.ok) {
+            showSuccess('Time updated successfully');
+            // Reload events for the current group
+            if (state.selectedGroup) {
+                loadEvents(state.selectedGroup.id);
+            }
+        } else {
+            showError('Failed to update time');
+        }
+    } catch (error) {
+        console.error('Error updating time:', error);
+        showError('Failed to update time');
+    }
+}
+
+// Edit team function
+async function editTeam(element, leagueId, participantId) {
+    if (!leagueId || !participantId) {
+        showError('Cannot edit team: missing league or participant information');
+        return;
+    }
+
+    try {
+        // Fetch teams for this league
+        const response = await fetch(`${API_BASE_URL}/games/league/${leagueId}/teams`);
+        const teams = await response.json();
+
+        if (teams.length === 0) {
+            showError('No teams found for this league');
+            return;
+        }
+
+        // Show team selection modal
+        showTeamSelectionModal(teams, participantId);
+    } catch (error) {
+        console.error('Error fetching teams:', error);
+        showError('Failed to load teams');
+    }
+}
+
+// Show team selection modal
+function showTeamSelectionModal(teams, participantId) {
+    // Create modal overlay
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content team-selection-modal">
+            <div class="modal-header">
+                <h3>Select Team</h3>
+                <button class="modal-close" onclick="closeTeamModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text"
+                       id="team-search"
+                       class="team-search-input"
+                       placeholder="Search teams..."
+                       onkeyup="filterTeams()">
+                <div class="team-list" id="team-list">
+                    ${teams.map(team => `
+                        <div class="team-item"
+                             data-team-name="${team.teamName.toLowerCase()}"
+                             onclick="selectTeam(${participantId}, ${team.leagueTeamId})">
+                            ${team.teamName}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Focus on search input
+    setTimeout(() => {
+        document.getElementById('team-search').focus();
+    }, 100);
+
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeTeamModal();
+        }
+    });
+}
+
+// Filter teams based on search
+function filterTeams() {
+    const searchTerm = document.getElementById('team-search').value.toLowerCase();
+    const teamItems = document.querySelectorAll('.team-item');
+
+    teamItems.forEach(item => {
+        const teamName = item.getAttribute('data-team-name');
+        if (teamName.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// Select team
+async function selectTeam(participantId, leagueTeamId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/games/participant/${participantId}/team`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ leagueTeamId })
+        });
+
+        if (response.ok) {
+            closeTeamModal();
+            showSuccess('Team updated successfully');
+            // Reload events for the current group
+            if (state.selectedGroup) {
+                loadEvents(state.selectedGroup.id);
+            }
+        } else {
+            showError('Failed to update team');
+        }
+    } catch (error) {
+        console.error('Error updating team:', error);
+        showError('Failed to update team');
+    }
+}
+
+// Close team modal
+function closeTeamModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
 }

@@ -16,8 +16,11 @@ public class GameDTO {
     private Integer tba;
     private String awayTeam;
     private Integer awayTeamId;
+    private Integer awayParticipantId;
     private String homeTeam;
     private Integer homeTeamId;
+    private Integer homeParticipantId;
+    private Integer leagueId;
     
     public GameDTO() {
     }
@@ -100,7 +103,31 @@ public class GameDTO {
     public void setHomeTeamId(Integer homeTeamId) {
         this.homeTeamId = homeTeamId;
     }
-    
+
+    public Integer getAwayParticipantId() {
+        return awayParticipantId;
+    }
+
+    public void setAwayParticipantId(Integer awayParticipantId) {
+        this.awayParticipantId = awayParticipantId;
+    }
+
+    public Integer getHomeParticipantId() {
+        return homeParticipantId;
+    }
+
+    public void setHomeParticipantId(Integer homeParticipantId) {
+        this.homeParticipantId = homeParticipantId;
+    }
+
+    public Integer getLeagueId() {
+        return leagueId;
+    }
+
+    public void setLeagueId(Integer leagueId) {
+        this.leagueId = leagueId;
+    }
+
     @Override
     public String toString() {
         return "GameDTO{" +
