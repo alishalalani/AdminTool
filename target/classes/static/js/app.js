@@ -7,10 +7,10 @@ let state = {
     selectedDate: null,
     selectedSport: null,
     selectedLeague: null,
-    selectedCategory: null,
+    selectedGroup: null,
     sports: [],
     leagues: [],
-    categories: [],
+    groups: [],
     events: []
 };
 
@@ -32,7 +32,7 @@ function initializeDatePicker() {
 
     dateInput.addEventListener('change', (e) => {
         state.selectedDate = e.target.value;
-        loadCategories();
+        loadGroups();
     });
 }
 
@@ -65,10 +65,10 @@ function refreshAll() {
         loadLeagues(state.selectedSport.id);
     }
     if (state.selectedLeague) {
-        loadCategories();
+        loadGroups();
     }
-    if (state.selectedCategory) {
-        loadEvents(state.selectedCategory.id);
+    if (state.selectedGroup) {
+        loadEvents(state.selectedGroup.id);
     }
 }
 
@@ -108,10 +108,10 @@ function displaySports(sports) {
             // Clear selection
             state.selectedSport = null;
             state.selectedLeague = null;
-            state.selectedCategory = null;
+            state.selectedGroup = null;
             document.getElementById('leagues-list').innerHTML = '<div class="empty-state"><p>Select a sport to view leagues</p></div>';
-            document.getElementById('categories-container').innerHTML = '<div class="empty-state"><p>Select a league to view categories</p></div>';
-            document.getElementById('events-container').innerHTML = '<div class="empty-state"><p>Select a category to view games</p></div>';
+            document.getElementById('groups-container').innerHTML = '<div class="empty-state"><p>Select a league to view groups</p></div>';
+            document.getElementById('events-container').innerHTML = '<div class="empty-state"><p>Select a group to view games</p></div>';
         }
     };
 }
@@ -122,14 +122,14 @@ function selectSport(sportId) {
 
     state.selectedSport = sport;
     state.selectedLeague = null;
-    state.selectedCategory = null;
+    state.selectedGroup = null;
 
     // Update dropdown selection
     const sportSelect = document.getElementById('sport-select');
     sportSelect.value = sportId;
 
     loadLeagues(sportId);
-    clearCategories();
+    clearGroups();
     clearEvents();
 }
 
@@ -169,39 +169,39 @@ function selectLeague(leagueId) {
     if (!league) return;
 
     state.selectedLeague = league;
-    state.selectedCategory = null;
+    state.selectedGroup = null;
 
     displayLeagues(state.leagues);
-    loadCategories();
+    loadGroups();
     clearEvents();
 }
 
-// Load categories
-function loadCategories() {
+// Load groups
+function loadGroups() {
     if (!state.selectedLeague) {
-        clearCategories();
+        clearGroups();
         return;
     }
 
     fetch(`${API_BASE_URL}/categories`)
         .then(response => response.json())
-        .then(categories => {
-            state.categories = categories;
-            displayCategories(categories);
+        .then(groups => {
+            state.groups = groups;
+            displayGroups(groups);
         })
         .catch(error => {
-            console.error('Error loading categories:', error);
-            showError('Failed to load categories');
+            console.error('Error loading groups:', error);
+            showError('Failed to load groups');
         });
 }
 
-function displayCategories(categories) {
-    const container = document.getElementById('categories-container');
-    const countBadge = document.getElementById('category-count');
+function displayGroups(groups) {
+    const container = document.getElementById('groups-container');
+    const countBadge = document.getElementById('group-count');
 
-    countBadge.textContent = categories.length;
+    countBadge.textContent = groups.length;
 
-    if (categories.length === 0) {
+    if (groups.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -209,25 +209,25 @@ function displayCategories(categories) {
                     <line x1="9" y1="9" x2="15" y2="15"/>
                     <line x1="15" y1="9" x2="9" y2="15"/>
                 </svg>
-                <p>No categories found for this league</p>
+                <p>No groups found for this league</p>
             </div>
         `;
         return;
     }
 
-    container.innerHTML = categories.map(category => `
-        <div class="category-card ${state.selectedCategory && state.selectedCategory.id === category.id ? 'active' : ''}"
-             onclick="selectCategory(${category.id})">
-            <div class="category-header">
-                <div class="category-title">${category.header || category.name || 'Unnamed Category'}</div>
-                <div class="category-actions">
-                    <button class="icon-btn-small" onclick="event.stopPropagation(); editCategory(${category.id})" title="Edit">
+    container.innerHTML = groups.map(group => `
+        <div class="group-card ${state.selectedGroup && state.selectedGroup.id === group.id ? 'active' : ''}"
+             onclick="selectGroup(${group.id})">
+            <div class="group-header">
+                <div class="group-title">${group.header || group.name || 'Unnamed Group'}</div>
+                <div class="group-actions">
+                    <button class="icon-btn-small" onclick="event.stopPropagation(); editGroup(${group.id})" title="Edit">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
                     </button>
-                    <button class="icon-btn-small" onclick="event.stopPropagation(); deleteCategory(${category.id})" title="Delete">
+                    <button class="icon-btn-small" onclick="event.stopPropagation(); deleteGroup(${group.id})" title="Delete">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -235,40 +235,40 @@ function displayCategories(categories) {
                     </button>
                 </div>
             </div>
-            <div class="category-meta">
-                <div class="category-meta-item">
+            <div class="group-meta">
+                <div class="group-meta-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                         <line x1="16" y1="2" x2="16" y2="6"/>
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    <span>${category.date ? new Date(category.date).toLocaleDateString() : 'No date'}</span>
+                    <span>${group.date ? new Date(group.date).toLocaleDateString() : 'No date'}</span>
                 </div>
-                <div class="category-meta-item">
+                <div class="group-meta-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    <span>ID: ${category.id}</span>
+                    <span>ID: ${group.id}</span>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
-function selectCategory(categoryId) {
-    const category = state.categories.find(c => c.id === categoryId);
-    if (!category) return;
+function selectGroup(groupId) {
+    const group = state.groups.find(c => c.id === groupId);
+    if (!group) return;
 
-    state.selectedCategory = category;
-    displayCategories(state.categories);
-    loadEvents(categoryId);
+    state.selectedGroup = group;
+    displayGroups(state.groups);
+    loadEvents(groupId);
 }
 
-function clearCategories() {
-    const container = document.getElementById('categories-container');
-    const countBadge = document.getElementById('category-count');
+function clearGroups() {
+    const container = document.getElementById('groups-container');
+    const countBadge = document.getElementById('group-count');
 
     countBadge.textContent = '0';
     container.innerHTML = `
@@ -276,7 +276,7 @@ function clearCategories() {
             <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
             </svg>
-            <p>Select a league to view categories</p>
+            <p>Select a league to view groups</p>
         </div>
     `;
 }
@@ -285,7 +285,7 @@ function clearCategories() {
 
 
 // Load events
-function loadEvents(categoryId) {
+function loadEvents(groupId) {
     fetch(`${API_BASE_URL}/events`)
         .then(response => response.json())
         .then(events => {
@@ -312,7 +312,7 @@ function displayEvents(events) {
                     <line x1="9" y1="9" x2="15" y2="15"/>
                     <line x1="15" y1="9" x2="9" y2="15"/>
                 </svg>
-                <p>No games found for this category</p>
+                <p>No games found for this group</p>
             </div>
         `;
         return;
@@ -348,22 +348,22 @@ function clearEvents() {
             <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
             </svg>
-            <p>Select a category to view games</p>
+            <p>Select a group to view games</p>
         </div>
     `;
 }
 
-// CRUD Operations - Categories
-function addCategory() {
+// CRUD Operations - Groups
+function addGroup() {
     if (!state.selectedLeague) {
         showError('Please select a league first');
         return;
     }
 
-    const header = prompt('Enter category header (e.g., "NFL - Thursday October 22nd"):');
+    const header = prompt('Enter group header (e.g., "NFL - Thursday October 22nd"):');
     if (!header) return;
 
-    const category = {
+    const group = {
         header: header,
         date: state.selectedDate,
         league: { id: state.selectedLeague.id },
@@ -373,64 +373,64 @@ function addCategory() {
     fetch(`${API_BASE_URL}/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(category)
+        body: JSON.stringify(group)
     })
     .then(response => response.json())
     .then(() => {
-        loadCategories();
-        showSuccess('Category added successfully');
+        loadGroups();
+        showSuccess('Group added successfully');
     })
     .catch(error => {
-        console.error('Error adding category:', error);
-        showError('Failed to add category');
+        console.error('Error adding group:', error);
+        showError('Failed to add group');
     });
 }
 
-function editCategory(categoryId) {
-    const category = state.categories.find(c => c.id === categoryId);
-    if (!category) return;
+function editGroup(groupId) {
+    const group = state.groups.find(c => c.id === groupId);
+    if (!group) return;
 
-    const newHeader = prompt('Edit category header:', category.header);
-    if (!newHeader || newHeader === category.header) return;
+    const newHeader = prompt('Edit group header:', group.header);
+    if (!newHeader || newHeader === group.header) return;
 
-    category.header = newHeader;
+    group.header = newHeader;
 
-    fetch(`${API_BASE_URL}/categories/${categoryId}`, {
+    fetch(`${API_BASE_URL}/categories/${groupId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(category)
+        body: JSON.stringify(group)
     })
     .then(response => response.json())
     .then(() => {
-        loadCategories();
-        showSuccess('Category updated successfully');
+        loadGroups();
+        showSuccess('Group updated successfully');
     })
     .catch(error => {
-        console.error('Error updating category:', error);
-        showError('Failed to update category');
+        console.error('Error updating group:', error);
+        showError('Failed to update group');
     });
 }
 
-function deleteCategory(categoryId) {
-    if (!confirm('Are you sure you want to delete this category?')) return;
+function deleteGroup(groupId) {
+    if (!confirm('Are you sure you want to delete this group?')) return;
 
-    fetch(`${API_BASE_URL}/categories/${categoryId}`, {
+    fetch(`${API_BASE_URL}/categories/${groupId}`, {
         method: 'DELETE'
     })
     .then(() => {
-        loadCategories();
-        showSuccess('Category deleted successfully');
+        loadGroups();
+        showSuccess('Group deleted successfully');
     })
     .catch(error => {
-        console.error('Error deleting category:', error);
-        showError('Failed to delete category');
+        console.error('Error deleting group:', error);
+        showError('Failed to delete group');
     });
 }
 
 // CRUD Operations - Events
 function addEvent() {
-    if (!state.selectedCategory) {
-        showError('Please select a category first');
+    if (!state.selectedGroup) {
+        showError('Please select a group first');
         return;
     }
 
@@ -439,7 +439,7 @@ function addEvent() {
 
     const event = {
         time: time,
-        category: { id: state.selectedCategory.id },
+        category: { id: state.selectedGroup.id },
         active: true
     };
 
@@ -450,7 +450,7 @@ function addEvent() {
     })
     .then(response => response.json())
     .then(() => {
-        loadEvents(state.selectedCategory.id);
+        loadEvents(state.selectedGroup.id);
         showSuccess('Game added successfully');
     })
     .catch(error => {
