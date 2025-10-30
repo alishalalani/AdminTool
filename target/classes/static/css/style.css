@@ -371,10 +371,49 @@ body {
 /* Center Panel - Groups */
 .center-panel {
     flex: 1;
+    min-width: 300px;
+    max-width: 70%;
     background: var(--bg-primary);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+/* Resize Handle */
+.resize-handle {
+    width: 8px;
+    background: var(--bg-secondary);
+    cursor: col-resize;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.resize-handle:hover {
+    background: var(--border-hover);
+}
+
+.resize-handle:active {
+    background: var(--primary-light);
+}
+
+.resize-handle-line {
+    width: 2px;
+    height: 40px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.2s;
+}
+
+.resize-handle:hover .resize-handle-line {
+    background: var(--primary);
+}
+
+.resize-handle:active .resize-handle-line {
+    background: var(--primary);
 }
 
 .panel-header {
@@ -534,7 +573,8 @@ body {
 
 /* Right Panel - Events/Games */
 .right-panel {
-    width: 400px;
+    flex: 1;
+    min-width: 300px;
     background: var(--bg-primary);
     display: flex;
     flex-direction: column;

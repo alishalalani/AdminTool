@@ -18,6 +18,7 @@ let state = {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Intel Odds Schedule Manager initialized');
     initializeDatePicker();
+    initializeResizeHandle();
     loadSports();
     checkConnection();
     setInterval(checkConnection, 30000);
@@ -33,6 +34,63 @@ function initializeDatePicker() {
     dateInput.addEventListener('change', (e) => {
         state.selectedDate = e.target.value;
         loadGroups();
+    });
+}
+
+// Resize handle initialization
+function initializeResizeHandle() {
+    const resizeHandle = document.getElementById('resize-handle');
+    const centerPanel = document.getElementById('center-panel');
+    const mainContainer = document.querySelector('.main-container');
+
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 0;
+
+    resizeHandle.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = centerPanel.offsetWidth;
+
+        // Add visual feedback
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        const deltaX = e.clientX - startX;
+        const newWidth = startWidth + deltaX;
+
+        // Get container width to calculate constraints
+        const containerWidth = mainContainer.offsetWidth;
+        const sidebarWidth = 280; // Left sidebar width
+        const minCenterWidth = 300;
+        const minRightWidth = 300;
+        const maxCenterWidth = containerWidth - sidebarWidth - minRightWidth - 8; // 8px for resize handle
+
+        // Apply constraints
+        if (newWidth >= minCenterWidth && newWidth <= maxCenterWidth) {
+            centerPanel.style.flex = 'none';
+            centerPanel.style.width = `${newWidth}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) {
+            isResizing = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+    });
+
+    // Double-click to reset to default
+    resizeHandle.addEventListener('dblclick', () => {
+        centerPanel.style.flex = '1';
+        centerPanel.style.width = '';
     });
 }
 
