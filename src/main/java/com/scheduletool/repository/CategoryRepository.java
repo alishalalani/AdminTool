@@ -11,6 +11,8 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     List<Category> findByLeague(League league);
+    List<Category> findByLeagueId(Integer leagueId);
+    List<Category> findByLeagueIdAndDateGreaterThanEqual(Integer leagueId, LocalDate date);
     List<Category> findByDate(LocalDate date);
     List<Category> findByLeagueAndDate(League league, LocalDate date);
     List<Category> findByDateBetween(LocalDate startDate, LocalDate endDate);

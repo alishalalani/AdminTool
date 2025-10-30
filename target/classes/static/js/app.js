@@ -208,15 +208,22 @@ function loadGroups() {
         return;
     }
 
-    fetch(`${API_BASE_URL}/categories`)
-        .then(response => response.json())
+    fetch(`${API_BASE_URL}/categories/league/${state.selectedLeague.id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(groups => {
+            console.log('Loaded groups for league', state.selectedLeague.id, ':', groups);
             state.groups = groups;
             displayGroups(groups);
         })
         .catch(error => {
             console.error('Error loading groups:', error);
             showError('Failed to load groups');
+            document.getElementById('groups-container').innerHTML = '<div class="empty-state"><p>Error loading groups</p></div>';
         });
 }
 

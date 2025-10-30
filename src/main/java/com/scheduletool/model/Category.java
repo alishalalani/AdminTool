@@ -1,5 +1,6 @@
 package com.scheduletool.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -9,10 +10,10 @@ import java.time.OffsetDateTime;
  * Replaces gsutils.data.Category
  */
 @Entity
- 
-    
 
-@Table(name = "category")
+
+
+@Table(name = "groups")
 public class Category {
     
     @Id
@@ -20,14 +21,11 @@ public class Category {
     @Column(name = "id")
     private Integer id;
     
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "league_id", nullable = false)
     private League league;
-    
-    @ManyToOne
-    @JoinColumn(name = "category_type_id")
-    private CategoryType categoryType;
-    
+
     @Column(name = "date", nullable = false)
     private LocalDate date;
     
@@ -39,13 +37,10 @@ public class Category {
     
     @Column(name = "exclude")
     private Boolean exclude;
-    
+
     @Column(name = "override")
     private Boolean override;
-    
-    @Column(name = "timestamp")
-    private OffsetDateTime timestamp;
-    
+
     // Constructors
     public Category() {
     }
@@ -73,15 +68,7 @@ public class Category {
     public void setLeague(League league) {
         this.league = league;
     }
-    
-    public CategoryType getCategoryType() {
-        return categoryType;
-    }
-    
-    public void setCategoryType(CategoryType categoryType) {
-        this.categoryType = categoryType;
-    }
-    
+
     public LocalDate getDate() {
         return date;
     }
@@ -121,15 +108,7 @@ public class Category {
     public void setOverride(Boolean override) {
         this.override = override;
     }
-    
-    public OffsetDateTime getTimestamp() {
-        return timestamp;
-    }
-    
-    public void setTimestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-    
+
     @Override
     public String toString() {
         return "Category{" +

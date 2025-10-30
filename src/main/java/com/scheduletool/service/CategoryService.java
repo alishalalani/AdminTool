@@ -29,7 +29,15 @@ public class CategoryService {
     public List<Category> getCategoriesByLeague(League league) {
         return categoryRepository.findByLeague(league);
     }
-    
+
+    public List<Category> getCategoriesByLeagueId(Integer leagueId) {
+        return categoryRepository.findByLeagueId(leagueId);
+    }
+
+    public List<Category> getUpcomingCategoriesByLeagueId(Integer leagueId) {
+        return categoryRepository.findByLeagueIdAndDateGreaterThanEqual(leagueId, LocalDate.now());
+    }
+
     public List<Category> getCategoriesByDate(LocalDate date) {
         return categoryRepository.findByDate(date);
     }
@@ -51,7 +59,6 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
         
         category.setLeague(categoryDetails.getLeague());
-        category.setCategoryType(categoryDetails.getCategoryType());
         category.setDate(categoryDetails.getDate());
         category.setEndDate(categoryDetails.getEndDate());
         category.setHeader(categoryDetails.getHeader());

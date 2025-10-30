@@ -31,7 +31,13 @@ public class CategoryController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
+    @GetMapping("/league/{leagueId}")
+    public ResponseEntity<List<Category>> getCategoriesByLeagueId(@PathVariable Integer leagueId) {
+        List<Category> categories = categoryService.getUpcomingCategoriesByLeagueId(leagueId);
+        return ResponseEntity.ok(categories);
+    }
+
     @GetMapping("/date/{date}")
     public ResponseEntity<List<Category>> getCategoriesByDate(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
