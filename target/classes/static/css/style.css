@@ -1341,8 +1341,8 @@ textarea.form-input {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    min-height: 200px;
-    max-height: 300px;
+    min-height: 300px;
+    max-height: 450px;
     overflow-y: auto;
     padding: 8px;
     background: var(--bg-secondary);
@@ -1420,7 +1420,7 @@ textarea.form-input {
 }
 
 .message-textarea {
-    min-height: 100px;
+    min-height: 65px;
     padding: 12px;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);

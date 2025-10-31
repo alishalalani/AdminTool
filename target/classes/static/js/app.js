@@ -2024,10 +2024,11 @@ function closeTeamModal() {
 
 // State for preset messages (stored in localStorage)
 const MESSAGE_PRESETS_KEY = 'scheduletool_message_presets';
+const MESSAGE_PRESETS_VERSION_KEY = 'scheduletool_message_presets_version';
+const CURRENT_PRESETS_VERSION = '2';
 
-function getPresetMessages() {
-    const stored = localStorage.getItem(MESSAGE_PRESETS_KEY);
-    return stored ? JSON.parse(stored) : [
+function getDefaultPresets() {
+    return [
         "Game has been postponed due to weather conditions.",
         "Game time has been changed. Please check the updated schedule.",
         "Venue change: Game will be played at alternate location.",
@@ -2043,6 +2044,21 @@ function getPresetMessages() {
         "Player injury update: Check team website for details.",
         "Game will be broadcast on local TV channel 5."
     ];
+}
+
+function getPresetMessages() {
+    const version = localStorage.getItem(MESSAGE_PRESETS_VERSION_KEY);
+
+    // If version doesn't match, reset to defaults
+    if (version !== CURRENT_PRESETS_VERSION) {
+        const defaults = getDefaultPresets();
+        localStorage.setItem(MESSAGE_PRESETS_KEY, JSON.stringify(defaults));
+        localStorage.setItem(MESSAGE_PRESETS_VERSION_KEY, CURRENT_PRESETS_VERSION);
+        return defaults;
+    }
+
+    const stored = localStorage.getItem(MESSAGE_PRESETS_KEY);
+    return stored ? JSON.parse(stored) : getDefaultPresets();
 }
 
 function savePresetMessages(presets) {
