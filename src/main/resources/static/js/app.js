@@ -2398,3 +2398,32 @@ function closeMessageTool() {
         modal.remove();
     }
 }
+
+// Open lines tool modal
+function openLinesTool() {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content lines-tool-modal">
+            <div class="modal-header">
+                <h3>Lines Tool</h3>
+                <button class="modal-close" onclick="closeLinesTool()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Lines tool functionality coming soon...</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeLinesTool()">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+// Close lines tool modal
+function closeLinesTool() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}

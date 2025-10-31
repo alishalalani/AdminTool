@@ -8,10 +8,7 @@ import java.time.OffsetDateTime;
  * Replaces gsutils.data.League_Player
  */
 @Entity
-
-    
-
-@Table(name = "league_player")
+@Table(name = "League_Player")
 public class LeaguePlayer {
     
     @Id

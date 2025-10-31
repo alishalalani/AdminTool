@@ -7,10 +7,7 @@ import javax.persistence.*;
  * Replaces gsutils.data.League_Position
  */
 @Entity
-
-    
-
-@Table(name = "league_position")
+@Table(name = "League_Position")
 public class LeaguePosition {
     
     @Id
