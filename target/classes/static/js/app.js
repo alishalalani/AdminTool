@@ -297,6 +297,12 @@ function loadGroups() {
         .then(groups => {
             console.log('Loaded groups for league', state.selectedLeague.id, 'and date', state.selectedDate, ':', groups);
             console.log('Number of groups returned:', groups.length);
+
+            // Log each group's details
+            groups.forEach(group => {
+                console.log(`  Group ID: ${group.id}, Date: ${group.date}, Header: ${group.header}`);
+            });
+
             state.groups = groups;
             displayGroups(groups);
         })
@@ -667,25 +673,41 @@ function saveNewGroup() {
         group.eventGroupType = { id: parseInt(groupTypeId) };
     }
 
+    console.log('Creating group:', group);
+
     fetch(`${API_BASE_URL}/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(group)
     })
     .then(response => {
+        console.log('Create group response status:', response.status);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            return response.text().then(text => {
+                console.error('Error response:', text);
+                throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+            });
         }
         return response.json();
     })
-    .then(() => {
+    .then(createdGroup => {
+        console.log('Group created successfully:', createdGroup);
+        console.log('Created group details - ID:', createdGroup.id, 'Date:', createdGroup.date, 'Header:', createdGroup.header);
         closeAddGroupModal();
+
+        // If the created group's date is before the selected date, update the selected date
+        if (createdGroup.date < state.selectedDate) {
+            console.log('Created group date is before selected date, updating filter to:', createdGroup.date);
+            state.selectedDate = createdGroup.date;
+            document.getElementById('schedule-date').value = createdGroup.date;
+        }
+
         loadGroups();
         showSuccess('Group added successfully');
     })
     .catch(error => {
         console.error('Error adding group:', error);
-        showError('Failed to add group');
+        showError('Failed to add group: ' + error.message);
     });
 }
 

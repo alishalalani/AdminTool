@@ -21,7 +21,6 @@ public class Category {
     @Column(name = "id")
     private Integer id;
     
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "league_id", nullable = false)
     private League league;
