@@ -2019,3 +2019,206 @@ function closeTeamModal() {
         modal.remove();
     }
 }
+
+// ==================== MESSAGE TOOL ====================
+
+// State for preset messages (stored in localStorage)
+const MESSAGE_PRESETS_KEY = 'scheduletool_message_presets';
+
+function getPresetMessages() {
+    const stored = localStorage.getItem(MESSAGE_PRESETS_KEY);
+    return stored ? JSON.parse(stored) : [
+        "Game has been postponed due to weather conditions.",
+        "Game time has been changed. Please check the updated schedule.",
+        "Venue change: Game will be played at alternate location.",
+        "Game has been cancelled.",
+        "Reminder: Game starts in 1 hour."
+    ];
+}
+
+function savePresetMessages(presets) {
+    localStorage.setItem(MESSAGE_PRESETS_KEY, JSON.stringify(presets));
+}
+
+// Open message tool modal
+function openMessageTool() {
+    const presets = getPresetMessages();
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content message-tool-modal">
+            <div class="modal-header">
+                <h3>Send Message</h3>
+                <button class="modal-close" onclick="closeMessageTool()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Message Type -->
+                <div class="message-type-section">
+                    <label for="message-type">Message Type</label>
+                    <select id="message-type" class="message-type-select">
+                        <option value="general">General Announcement</option>
+                        <option value="schedule">Schedule Change</option>
+                        <option value="venue">Venue Change</option>
+                        <option value="cancellation">Cancellation</option>
+                        <option value="postponement">Postponement</option>
+                        <option value="reminder">Reminder</option>
+                        <option value="weather">Weather Alert</option>
+                    </select>
+                </div>
+
+                <!-- Preset Messages -->
+                <div class="preset-messages-section">
+                    <div class="preset-messages-header">
+                        <label>Preset Messages</label>
+                        <div class="preset-actions">
+                            <button class="preset-btn add" onclick="addPresetMessage()">+ Add</button>
+                        </div>
+                    </div>
+                    <div class="preset-messages-list" id="preset-messages-list">
+                        ${renderPresetMessages(presets)}
+                    </div>
+                </div>
+
+                <!-- Message Box -->
+                <div class="message-box-section">
+                    <label for="message-text">Message</label>
+                    <textarea id="message-text"
+                              class="message-textarea"
+                              placeholder="Type your message here..."
+                              maxlength="500"
+                              oninput="updateCharCount()"></textarea>
+                    <div class="message-char-count">
+                        <span id="char-count">0</span> / 500 characters
+                    </div>
+                </div>
+            </div>
+            <div class="message-tool-footer">
+                <button class="btn-cancel" onclick="closeMessageTool()">Cancel</button>
+                <button class="btn-send" onclick="sendMessage()">Send Message</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeMessageTool();
+        }
+    });
+}
+
+// Render preset messages
+function renderPresetMessages(presets) {
+    if (presets.length === 0) {
+        return '<div style="padding: 20px; text-align: center; color: var(--text-muted);">No preset messages. Click "+ Add" to create one.</div>';
+    }
+
+    return presets.map((preset, index) => `
+        <div class="preset-message-item" onclick="selectPresetMessage(${index})">
+            <span class="preset-message-text" title="${preset}">${preset}</span>
+            <div class="preset-message-actions">
+                <button class="preset-icon-btn" onclick="event.stopPropagation(); editPresetMessage(${index})" title="Edit">
+                    ✏️
+                </button>
+                <button class="preset-icon-btn delete" onclick="event.stopPropagation(); deletePresetMessage(${index})" title="Delete">
+                    🗑️
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Select a preset message
+function selectPresetMessage(index) {
+    const presets = getPresetMessages();
+    const messageTextarea = document.getElementById('message-text');
+    if (messageTextarea && presets[index]) {
+        messageTextarea.value = presets[index];
+        updateCharCount();
+    }
+}
+
+// Add new preset message
+function addPresetMessage() {
+    const message = prompt('Enter new preset message:');
+    if (message && message.trim()) {
+        const presets = getPresetMessages();
+        presets.push(message.trim());
+        savePresetMessages(presets);
+        refreshPresetList();
+    }
+}
+
+// Edit preset message
+function editPresetMessage(index) {
+    const presets = getPresetMessages();
+    const currentMessage = presets[index];
+    const newMessage = prompt('Edit preset message:', currentMessage);
+
+    if (newMessage !== null && newMessage.trim()) {
+        presets[index] = newMessage.trim();
+        savePresetMessages(presets);
+        refreshPresetList();
+    }
+}
+
+// Delete preset message
+function deletePresetMessage(index) {
+    if (confirm('Are you sure you want to delete this preset message?')) {
+        const presets = getPresetMessages();
+        presets.splice(index, 1);
+        savePresetMessages(presets);
+        refreshPresetList();
+    }
+}
+
+// Refresh preset messages list
+function refreshPresetList() {
+    const presets = getPresetMessages();
+    const listContainer = document.getElementById('preset-messages-list');
+    if (listContainer) {
+        listContainer.innerHTML = renderPresetMessages(presets);
+    }
+}
+
+// Update character count
+function updateCharCount() {
+    const textarea = document.getElementById('message-text');
+    const charCount = document.getElementById('char-count');
+    if (textarea && charCount) {
+        charCount.textContent = textarea.value.length;
+    }
+}
+
+// Send message
+async function sendMessage() {
+    const messageType = document.getElementById('message-type').value;
+    const messageText = document.getElementById('message-text').value.trim();
+
+    if (!messageText) {
+        showError('Please enter a message');
+        return;
+    }
+
+    // TODO: Implement actual message sending logic
+    // This would typically send to a backend API
+    console.log('Sending message:', {
+        type: messageType,
+        message: messageText,
+        timestamp: new Date().toISOString()
+    });
+
+    showSuccess('Message sent successfully');
+    closeMessageTool();
+}
+
+// Close message tool modal
+function closeMessageTool() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
