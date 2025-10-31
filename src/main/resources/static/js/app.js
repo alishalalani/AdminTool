@@ -1057,32 +1057,68 @@ async function editGame(eventId) {
                 <div class="form-group">
                     <label for="edit-event-number">Event Number:</label>
                     <input type="number" id="edit-event-number" class="form-input" value="${game.number || ''}" placeholder="e.g., 101">
+                    <small style="color: #666; font-size: 0.85rem;">First team will be #N, second team will be #N+1</small>
                 </div>
 
-                <div class="form-group">
-                    <label for="edit-away-team">Away Team:</label>
-                    <input type="text"
-                           id="edit-away-team"
-                           class="form-input searchable-team"
-                           value="${game.awayTeam || ''}"
-                           placeholder="Type to search teams..."
-                           autocomplete="off"
-                           data-team-id="${game.awayTeamId || ''}"
-                           data-participant-id="${game.awayParticipantId || ''}">
-                    <div id="edit-away-team-dropdown" class="team-dropdown" style="display: none;"></div>
+                <div style="display: grid; grid-template-columns: 60px 1fr; gap: 1rem; align-items: start;">
+                    <div style="text-align: center; padding-top: 1.8rem;">
+                        <div id="edit-away-team-number" style="font-size: 1.1rem; font-weight: 600; color: #666;">${game.number || '-'}</div>
+                        <div style="font-size: 0.7rem; color: #999; margin-top: 0.25rem;">AWAY</div>
+                    </div>
+                    <div class="form-group" style="position: relative;">
+                        <label for="edit-away-team">Away Team:</label>
+                        <input type="text"
+                               id="edit-away-team"
+                               class="form-input searchable-team"
+                               value="${game.awayTeam || ''}"
+                               placeholder="Type to search teams..."
+                               autocomplete="off"
+                               data-team-id="${game.awayTeamId || ''}"
+                               data-participant-id="${game.awayParticipantId || ''}">
+                        <div id="edit-away-team-dropdown" class="team-dropdown" style="display: none;"></div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="edit-home-team">Home Team:</label>
-                    <input type="text"
-                           id="edit-home-team"
-                           class="form-input searchable-team"
-                           value="${game.homeTeam || ''}"
-                           placeholder="Type to search teams..."
-                           autocomplete="off"
-                           data-team-id="${game.homeTeamId || ''}"
-                           data-participant-id="${game.homeParticipantId || ''}">
-                    <div id="edit-home-team-dropdown" class="team-dropdown" style="display: none;"></div>
+                <div style="display: grid; grid-template-columns: 60px 1fr; gap: 1rem; align-items: start;">
+                    <div style="text-align: center; padding-top: 1.8rem;">
+                        <div id="edit-home-team-number" style="font-size: 1.1rem; font-weight: 600; color: #666;">${game.number ? game.number + 1 : '-'}</div>
+                        <div style="font-size: 0.7rem; color: #999; margin-top: 0.25rem;">HOME</div>
+                    </div>
+                    <div class="form-group" style="position: relative;">
+                        <label for="edit-home-team">Home Team:</label>
+                        <input type="text"
+                               id="edit-home-team"
+                               class="form-input searchable-team"
+                               value="${game.homeTeam || ''}"
+                               placeholder="Type to search teams..."
+                               autocomplete="off"
+                               data-team-id="${game.homeTeamId || ''}"
+                               data-participant-id="${game.homeParticipantId || ''}">
+                        <div id="edit-home-team-dropdown" class="team-dropdown" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                    <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Venue</label>
+
+                    <div style="display: flex; gap: 1.5rem; margin-bottom: 0.75rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="edit-venue-neutral" ${game.neutralSite ? 'checked' : ''}> Neutral Site
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="edit-venue-override" ${game.venueOverride ? 'checked' : ''}> Override
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-venue-name">Venue Name:</label>
+                        <input type="text" id="edit-venue-name" class="form-input" value="${game.venueName || ''}" placeholder="Enter venue name (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-venue-city">Venue City:</label>
+                        <input type="text" id="edit-venue-city" class="form-input" value="${game.venueCity || ''}" placeholder="Enter venue city (optional)">
+                    </div>
                 </div>
 
                 <div class="modal-actions">
@@ -1095,9 +1131,32 @@ async function editGame(eventId) {
 
     document.body.appendChild(modal);
 
-    // Setup team search for edit modal
-    setupTeamSearch('edit-away-team', 'edit-away-team-dropdown', teams);
-    setupTeamSearch('edit-home-team', 'edit-home-team-dropdown', teams);
+    // Initialize searchable team dropdowns
+    initSearchableTeamDropdown('edit-away-team', 'edit-away-team-dropdown', teams);
+    initSearchableTeamDropdown('edit-home-team', 'edit-home-team-dropdown', teams);
+
+    // Update event numbers when event number changes
+    const eventNumberInput = document.getElementById('edit-event-number');
+    eventNumberInput.addEventListener('input', updateEditEventNumbers);
+
+    // Initial update
+    updateEditEventNumbers();
+}
+
+// Update event numbers display for edit modal
+function updateEditEventNumbers() {
+    const eventNumber = document.getElementById('edit-event-number').value;
+    const awayNumber = document.getElementById('edit-away-team-number');
+    const homeNumber = document.getElementById('edit-home-team-number');
+
+    if (eventNumber && !isNaN(eventNumber)) {
+        const num = parseInt(eventNumber);
+        awayNumber.textContent = num;
+        homeNumber.textContent = num + 1;
+    } else {
+        awayNumber.textContent = '-';
+        homeNumber.textContent = '-';
+    }
 }
 
 function closeEditGameModal() {
@@ -1118,6 +1177,10 @@ async function saveEditedGame(eventId) {
     const homeTeamId = homeTeamInput.dataset.teamId;
     const awayParticipantId = awayTeamInput.dataset.participantId;
     const homeParticipantId = homeTeamInput.dataset.participantId;
+    const venueNeutral = document.getElementById('edit-venue-neutral').checked;
+    const venueOverride = document.getElementById('edit-venue-override').checked;
+    const venueName = document.getElementById('edit-venue-name').value;
+    const venueCity = document.getElementById('edit-venue-city').value;
 
     if (!date) {
         showError('Please select a date');
@@ -1171,6 +1234,22 @@ async function saveEditedGame(eventId) {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ leagueTeamId: parseInt(homeTeamId) })
+            });
+        }
+
+        // Update venue information
+        // Note: This assumes there's a backend endpoint to update venue info
+        // You may need to adjust this based on your actual API
+        if (venueName || venueCity || venueNeutral || venueOverride) {
+            await fetch(`${API_BASE_URL}/games/event/${eventId}/venue`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    neutralSite: venueNeutral,
+                    venueOverride: venueOverride,
+                    venueName: venueName,
+                    venueCity: venueCity
+                })
             });
         }
 
