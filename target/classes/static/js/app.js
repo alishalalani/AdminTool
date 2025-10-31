@@ -2032,7 +2032,16 @@ function getPresetMessages() {
         "Game time has been changed. Please check the updated schedule.",
         "Venue change: Game will be played at alternate location.",
         "Game has been cancelled.",
-        "Reminder: Game starts in 1 hour."
+        "Reminder: Game starts in 1 hour.",
+        "Game has been rescheduled to a later date.",
+        "Weather delay: Game will resume shortly.",
+        "Final score update has been posted.",
+        "Team roster changes have been made.",
+        "Parking information: Use lot B for today's game.",
+        "Concessions will close 30 minutes before game end.",
+        "Special promotion: Half-price tickets for next game.",
+        "Player injury update: Check team website for details.",
+        "Game will be broadcast on local TV channel 5."
     ];
 }
 
