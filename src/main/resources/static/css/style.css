@@ -1284,6 +1284,45 @@ textarea.form-input {
     box-shadow: 0 0 0 3px var(--primary-light);
 }
 
+.event-info-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    margin-bottom: 8px;
+}
+
+.event-info-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.event-info-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.event-info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.event-info-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    min-width: 80px;
+}
+
+.event-info-value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
 .preset-messages-section {
     display: flex;
     flex-direction: column;

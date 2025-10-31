@@ -578,6 +578,11 @@ function displayEvents(games) {
                         </div>
                     </div>
                     <div class="event-actions">
+                        <button class="icon-btn-small" onclick="openMessageToolForEvent(${game.eventId}, '${(game.awayTeam || 'TBD').replace(/'/g, "\\'")}', '${(game.homeTeam || 'TBD').replace(/'/g, "\\'")}', '${dateTimeDisplay}')" title="Send Message">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </button>
                         <button class="icon-btn-small" onclick="editGame(${game.eventId})" title="Edit Game">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -2169,6 +2174,95 @@ function openMessageTool() {
     });
 }
 
+// Open message tool modal for a specific event
+function openMessageToolForEvent(eventId, awayTeam, homeTeam, dateTime) {
+    const presets = getPresetMessages();
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content message-tool-modal">
+            <div class="modal-header">
+                <h3>Send Message</h3>
+                <button class="modal-close" onclick="closeMessageTool()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Event Info -->
+                <div class="event-info-section">
+                    <div class="event-info-header">Event Information</div>
+                    <div class="event-info-details">
+                        <div class="event-info-row">
+                            <span class="event-info-label">Game:</span>
+                            <span class="event-info-value">${awayTeam} vs ${homeTeam}</span>
+                        </div>
+                        <div class="event-info-row">
+                            <span class="event-info-label">Time:</span>
+                            <span class="event-info-value">${dateTime}</span>
+                        </div>
+                        <div class="event-info-row">
+                            <span class="event-info-label">Event ID:</span>
+                            <span class="event-info-value">#${eventId}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Type -->
+                <div class="message-type-section">
+                    <label for="message-type">Message Type</label>
+                    <select id="message-type" class="message-type-select">
+                        <option value="general">General Announcement</option>
+                        <option value="schedule">Schedule Change</option>
+                        <option value="venue">Venue Change</option>
+                        <option value="cancellation">Cancellation</option>
+                        <option value="postponement">Postponement</option>
+                        <option value="reminder">Reminder</option>
+                        <option value="weather">Weather Alert</option>
+                    </select>
+                </div>
+
+                <!-- Preset Messages -->
+                <div class="preset-messages-section">
+                    <div class="preset-messages-header">
+                        <label>Preset Messages</label>
+                        <div class="preset-actions">
+                            <button class="preset-btn add" onclick="addPresetMessage()">+ Add</button>
+                        </div>
+                    </div>
+                    <div class="preset-messages-list" id="preset-messages-list">
+                        ${renderPresetMessages(presets)}
+                    </div>
+                </div>
+
+                <!-- Message Box -->
+                <div class="message-box-section">
+                    <label for="message-text">Message</label>
+                    <textarea id="message-text"
+                              class="message-textarea"
+                              placeholder="Type your message here..."
+                              maxlength="500"
+                              oninput="updateCharCount()"></textarea>
+                    <div class="message-char-count">
+                        <span id="char-count">0</span> / 500 characters
+                    </div>
+                </div>
+            </div>
+            <div class="message-tool-footer">
+                <button class="btn-cancel" onclick="closeMessageTool()">Cancel</button>
+                <button class="btn-send" onclick="sendMessageForEvent(${eventId})">Send Message</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeMessageTool();
+        }
+    });
+}
+
 // Render preset messages
 function renderPresetMessages(presets) {
     if (presets.length === 0) {
@@ -2271,6 +2365,29 @@ async function sendMessage() {
     });
 
     showSuccess('Message sent successfully');
+    closeMessageTool();
+}
+
+// Send message for a specific event
+async function sendMessageForEvent(eventId) {
+    const messageType = document.getElementById('message-type').value;
+    const messageText = document.getElementById('message-text').value.trim();
+
+    if (!messageText) {
+        showError('Please enter a message');
+        return;
+    }
+
+    // TODO: Implement actual message sending logic for specific event
+    // This would typically send to a backend API with event ID
+    console.log('Sending message for event:', {
+        eventId: eventId,
+        type: messageType,
+        message: messageText,
+        timestamp: new Date().toISOString()
+    });
+
+    showSuccess(`Message sent successfully for Event #${eventId}`);
     closeMessageTool();
 }
 
