@@ -1090,3 +1090,45 @@ textarea.form-input {
     background: var(--primary);
     color: white;
 }
+
+/* Searchable Team Dropdown */
+.team-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 4px;
+}
+
+.team-option {
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.team-option:last-child {
+    border-bottom: none;
+}
+
+.team-option:hover,
+.team-option.highlighted {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.team-option:active {
+    background: var(--primary);
+    color: white;
+}
+
+.searchable-team {
+    cursor: text;
+}

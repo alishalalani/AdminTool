@@ -790,24 +790,24 @@ async function showAddGameModal() {
         return;
     }
 
-    // Fetch teams
+    // Fetch teams and store globally for later use
     const teams = await fetch(`${API_BASE_URL}/games/league/${leagueId}/teams`).then(r => r.json());
+    window.currentGameTeams = teams; // Store for saveNewGame function
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
-        <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-content add-group-modal">
             <div class="modal-header">
-                <h2>Add Game</h2>
-                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+                <h3>Add Game</h3>
+                <button class="modal-close" onclick="closeAddGameModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group">
                         <label for="game-date">Date:</label>
-                        <input type="date" id="game-date" class="form-input" value="${group.date}" required>
+                        <input type="date" id="game-date" class="form-input" value="${group.date}">
                     </div>
-
                     <div class="form-group">
                         <label for="game-time">Time:</label>
                         <input type="time" id="game-time" class="form-input">
@@ -822,46 +822,50 @@ async function showAddGameModal() {
 
                 <div class="form-group">
                     <label for="event-number">Event Number:</label>
-                    <input type="number" id="event-number" class="form-input" placeholder="e.g., 101" required>
+                    <input type="number" id="event-number" class="form-input" placeholder="e.g., 101">
                     <small style="color: #666; font-size: 0.85rem;">First team will be #N, second team will be #N+1</small>
                 </div>
 
-                <div class="form-grid" style="grid-template-columns: auto 1fr; gap: 1rem; align-items: center;">
-                    <div style="text-align: center; font-weight: bold; color: #666;">
-                        <div id="away-team-number" style="font-size: 1.2rem; margin-bottom: 0.5rem;">-</div>
-                        <div style="font-size: 0.75rem;">AWAY</div>
+                <div style="display: grid; grid-template-columns: 60px 1fr; gap: 1rem; align-items: start;">
+                    <div style="text-align: center; padding-top: 1.8rem;">
+                        <div id="away-team-number" style="font-size: 1.1rem; font-weight: 600; color: #666;">-</div>
+                        <div style="font-size: 0.7rem; color: #999; margin-top: 0.25rem;">AWAY</div>
                     </div>
-                    <div class="form-group" style="margin: 0;">
+                    <div class="form-group" style="position: relative;">
                         <label for="away-team">Away Team:</label>
-                        <select id="away-team" class="form-input">
-                            <option value="">Select Team...</option>
-                            ${teams.map(t => `<option value="${t.leagueTeamId}">${t.teamName}</option>`).join('')}
-                        </select>
+                        <input type="text"
+                               id="away-team"
+                               class="form-input searchable-team"
+                               placeholder="Type to search teams..."
+                               autocomplete="off">
+                        <div id="away-team-dropdown" class="team-dropdown" style="display: none;"></div>
                     </div>
                 </div>
 
-                <div class="form-grid" style="grid-template-columns: auto 1fr; gap: 1rem; align-items: center; margin-top: 1rem;">
-                    <div style="text-align: center; font-weight: bold; color: #666;">
-                        <div id="home-team-number" style="font-size: 1.2rem; margin-bottom: 0.5rem;">-</div>
-                        <div style="font-size: 0.75rem;">HOME</div>
+                <div style="display: grid; grid-template-columns: 60px 1fr; gap: 1rem; align-items: start;">
+                    <div style="text-align: center; padding-top: 1.8rem;">
+                        <div id="home-team-number" style="font-size: 1.1rem; font-weight: 600; color: #666;">-</div>
+                        <div style="font-size: 0.7rem; color: #999; margin-top: 0.25rem;">HOME</div>
                     </div>
-                    <div class="form-group" style="margin: 0;">
+                    <div class="form-group" style="position: relative;">
                         <label for="home-team">Home Team:</label>
-                        <select id="home-team" class="form-input">
-                            <option value="">Select Team...</option>
-                            ${teams.map(t => `<option value="${t.leagueTeamId}">${t.teamName}</option>`).join('')}
-                        </select>
+                        <input type="text"
+                               id="home-team"
+                               class="form-input searchable-team"
+                               placeholder="Type to search teams..."
+                               autocomplete="off">
+                        <div id="home-team-dropdown" class="team-dropdown" style="display: none;"></div>
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 1.5rem;">
-                    <label style="font-weight: bold; margin-bottom: 0.5rem; display: block;">Venue</label>
+                <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                    <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Venue</label>
 
-                    <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
-                        <label>
+                    <div style="display: flex; gap: 1.5rem; margin-bottom: 0.75rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
                             <input type="checkbox" id="venue-neutral"> Neutral Site
                         </label>
-                        <label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
                             <input type="checkbox" id="venue-override"> Override
                         </label>
                     </div>
@@ -876,15 +880,20 @@ async function showAddGameModal() {
                         <input type="text" id="venue-city" class="form-input" placeholder="Enter venue city (optional)">
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
-                <button class="btn-primary" onclick="saveNewGame()">Add Game</button>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeAddGameModal()">Cancel</button>
+                    <button class="btn-primary" onclick="saveNewGame()">Add Game</button>
+                </div>
             </div>
         </div>
     `;
 
     document.body.appendChild(modal);
+
+    // Initialize searchable team dropdowns
+    initSearchableTeamDropdown('away-team', 'away-team-dropdown', teams);
+    initSearchableTeamDropdown('home-team', 'home-team-dropdown', teams);
 
     // Update event numbers when event number changes
     const eventNumberInput = document.getElementById('event-number');
@@ -892,6 +901,125 @@ async function showAddGameModal() {
 
     // Initial update
     updateEventNumbers();
+}
+
+function closeAddGameModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function initSearchableTeamDropdown(inputId, dropdownId, teams) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    let selectedIndex = -1;
+    let filteredTeams = [];
+
+    function showDropdown(teamsToShow) {
+        filteredTeams = teamsToShow;
+        if (filteredTeams.length === 0) {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        dropdown.innerHTML = filteredTeams.map((team, index) =>
+            `<div class="team-option" data-index="${index}" data-id="${team.leagueTeamId}">
+                ${team.teamName}
+            </div>`
+        ).join('');
+
+        dropdown.style.display = 'block';
+        selectedIndex = -1;
+    }
+
+    function hideDropdown() {
+        dropdown.style.display = 'none';
+        selectedIndex = -1;
+    }
+
+    function selectTeam(team) {
+        input.value = team.teamName;
+        input.dataset.teamId = team.leagueTeamId;
+        hideDropdown();
+    }
+
+    function highlightOption(index) {
+        const options = dropdown.querySelectorAll('.team-option');
+        options.forEach((opt, i) => {
+            opt.classList.toggle('highlighted', i === index);
+        });
+    }
+
+    // Input event - filter teams
+    input.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        if (!searchTerm) {
+            showDropdown(teams);
+        } else {
+            const filtered = teams.filter(team =>
+                team.teamName.toLowerCase().includes(searchTerm)
+            );
+            showDropdown(filtered);
+        }
+    });
+
+    // Focus event - show all teams
+    input.addEventListener('focus', () => {
+        showDropdown(teams);
+    });
+
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            hideDropdown();
+        }
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+        const options = dropdown.querySelectorAll('.team-option');
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, filteredTeams.length - 1);
+            highlightOption(selectedIndex);
+            options[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, 0);
+            highlightOption(selectedIndex);
+            options[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selectedIndex >= 0 && filteredTeams[selectedIndex]) {
+                selectTeam(filteredTeams[selectedIndex]);
+            } else if (filteredTeams.length === 1) {
+                // If only one option, select it
+                selectTeam(filteredTeams[0]);
+            }
+        } else if (e.key === 'Escape') {
+            hideDropdown();
+        }
+    });
+
+    // Click on option
+    dropdown.addEventListener('click', (e) => {
+        const option = e.target.closest('.team-option');
+        if (option) {
+            const index = parseInt(option.dataset.index);
+            selectTeam(filteredTeams[index]);
+        }
+    });
+
+    // Hover on option
+    dropdown.addEventListener('mouseover', (e) => {
+        const option = e.target.closest('.team-option');
+        if (option) {
+            selectedIndex = parseInt(option.dataset.index);
+            highlightOption(selectedIndex);
+        }
+    });
 }
 
 function updateEventNumbers() {
@@ -914,8 +1042,8 @@ async function saveNewGame() {
     const time = document.getElementById('game-time').value;
     const tba = document.getElementById('game-tba').checked ? 1 : 0;
     const eventNumber = parseInt(document.getElementById('event-number').value);
-    const awayTeamId = document.getElementById('away-team').value;
-    const homeTeamId = document.getElementById('home-team').value;
+    const awayTeamInput = document.getElementById('away-team');
+    const homeTeamInput = document.getElementById('home-team');
     const venueName = document.getElementById('venue-name').value;
     const venueCity = document.getElementById('venue-city').value;
     const neutral = document.getElementById('venue-neutral').checked;
@@ -935,6 +1063,10 @@ async function saveNewGame() {
         return;
     }
 
+    // Get team IDs from dataset (set by the searchable dropdown)
+    const awayTeamId = awayTeamInput.dataset.teamId ? parseInt(awayTeamInput.dataset.teamId) : null;
+    const homeTeamId = homeTeamInput.dataset.teamId ? parseInt(homeTeamInput.dataset.teamId) : null;
+
     const gameData = {
         groupId: state.selectedGroup.id,
         leagueId: state.selectedGroup.league ? state.selectedGroup.league.id : null,
@@ -942,8 +1074,8 @@ async function saveNewGame() {
         time: time,
         tba: tba,
         eventNumber: eventNumber,
-        homeTeamId: (homeTeamId && homeTeamId !== '' && homeTeamId !== 'undefined') ? parseInt(homeTeamId) : null,
-        awayTeamId: (awayTeamId && awayTeamId !== '' && awayTeamId !== 'undefined') ? parseInt(awayTeamId) : null,
+        homeTeamId: homeTeamId,
+        awayTeamId: awayTeamId,
         venueName: venueName || null,
         venueCity: venueCity || null,
         neutral: neutral,
@@ -961,8 +1093,7 @@ async function saveNewGame() {
             throw new Error('Failed to create game');
         }
 
-        // Close modal
-        document.querySelector('.modal-overlay').remove();
+        closeAddGameModal();
 
         // Reload events
         await loadEvents(state.selectedGroup.id);
