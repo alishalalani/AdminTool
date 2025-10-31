@@ -61,12 +61,13 @@ public class GameService {
             if (event == null) {
                 continue;
             }
-            
+
             GameDTO game = new GameDTO();
             game.setEventId(event.getId());
             game.setDate(event.getDate());
             game.setNumber(event.getNumber());
             game.setLeagueId(event.getLeague() != null ? event.getLeague().getId() : null);
+            game.setActive(event.getActive() != null ? event.getActive() : true);
 
             // Step 3: Get event time
             List<EventTime> eventTimes = eventTimeRepository.findByEventId(eventId);

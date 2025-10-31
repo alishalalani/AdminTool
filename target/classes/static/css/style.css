@@ -633,6 +633,26 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
+.event-card:hover .event-actions {
+    opacity: 1;
+}
+
+.event-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.event-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
 .event-status {
     position: absolute;
     top: 4px;
@@ -753,6 +773,52 @@ body {
 .status-label {
     font-weight: 600;
     color: var(--text-tertiary);
+}
+
+/* Deactivated Games Section */
+.deactivated-section {
+    margin-top: 24px;
+    margin-bottom: 12px;
+    padding-top: 16px;
+    border-top: 2px solid var(--border);
+}
+
+.deactivated-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 4px;
+    margin-bottom: 8px;
+}
+
+.event-card.inactive {
+    background: #fef2f2;
+    border-color: #fecaca;
+    opacity: 0.7;
+}
+
+.event-card.inactive:hover {
+    border-color: #f87171;
+    opacity: 0.85;
+}
+
+.event-card.inactive .team-name {
+    color: #991b1b;
+}
+
+.event-card.inactive .event-time {
+    color: #dc2626;
+}
+
+.event-card.inactive .event-number {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.event-card.inactive .team-score {
+    color: #991b1b;
 }
 
 /* Scrollbar Styling */
@@ -1059,6 +1125,8 @@ textarea.form-input {
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     background: var(--bg-secondary);
+    height: 300px;
+    min-height: 300px;
     max-height: 300px;
     overflow-y: auto;
 }

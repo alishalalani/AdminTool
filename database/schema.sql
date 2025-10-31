@@ -194,6 +194,7 @@ CREATE TABLE IF NOT EXISTS Event (
     date DATE NOT NULL,
     number INT NOT NULL,
     league_id INT NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
     exclude BOOLEAN DEFAULT FALSE,
     double_header INT DEFAULT 0,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

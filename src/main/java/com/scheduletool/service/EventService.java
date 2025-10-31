@@ -3,6 +3,7 @@ package com.scheduletool.service;
 import com.scheduletool.model.Event;
 import com.scheduletool.model.League;
 import com.scheduletool.repository.EventRepository;
+import com.scheduletool.repository.EventTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +15,12 @@ import java.util.Optional;
 @Service
 @Transactional
 public class EventService {
-    
+
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private EventTimeRepository eventTimeRepository;
     
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
@@ -63,7 +67,11 @@ public class EventService {
     }
     
     public void deleteEvent(Integer id) {
-        eventRepository.deleteById(id);
+        // Instead of deleting, set active to false
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
+        event.setActive(false);
+        eventRepository.save(event);
     }
 }
 

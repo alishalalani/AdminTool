@@ -444,7 +444,11 @@ function displayEvents(games) {
     const container = document.getElementById('events-container');
     const countBadge = document.getElementById('event-count');
 
-    countBadge.textContent = games.length;
+    // Separate active and inactive games
+    const activeGames = games.filter(game => game.active !== false);
+    const inactiveGames = games.filter(game => game.active === false);
+
+    countBadge.textContent = activeGames.length;
 
     if (games.length === 0) {
         container.innerHTML = `
@@ -461,19 +465,25 @@ function displayEvents(games) {
     }
 
     // Sort games by time
-    const sortedGames = [...games].sort((a, b) => {
-        // Handle TBA games - put them at the end
-        if (a.tba && !b.tba) return 1;
-        if (!a.tba && b.tba) return -1;
-        if (a.tba && b.tba) return 0;
+    const sortGames = (gamesToSort) => {
+        return [...gamesToSort].sort((a, b) => {
+            // Handle TBA games - put them at the end
+            if (a.tba && !b.tba) return 1;
+            if (!a.tba && b.tba) return -1;
+            if (a.tba && b.tba) return 0;
 
-        // Sort by time
-        const timeA = a.time ? new Date(a.time).getTime() : 0;
-        const timeB = b.time ? new Date(b.time).getTime() : 0;
-        return timeA - timeB;
-    });
+            // Sort by time
+            const timeA = a.time ? new Date(a.time).getTime() : 0;
+            const timeB = b.time ? new Date(b.time).getTime() : 0;
+            return timeA - timeB;
+        });
+    };
 
-    container.innerHTML = sortedGames.map(game => {
+    const sortedActiveGames = sortGames(activeGames);
+    const sortedInactiveGames = sortGames(inactiveGames);
+
+    // Function to render a game card
+    const renderGameCard = (game, isInactive = false) => {
         // Debug logging
         console.log('Game data:', {
             eventId: game.eventId,
@@ -537,33 +547,49 @@ function displayEvents(games) {
         const periodDisplay = game.period || '';
 
         return `
-            <div class="event-card" data-event-id="${game.eventId}" data-league-id="${game.leagueId || ''}">
-                <div class="event-teams">
-                    <div class="team-row">
-                        <div class="team-name editable-team"
-                             data-participant-id="${game.awayParticipantId || ''}"
-                             data-team-id="${game.awayTeamId || ''}"
-                             onclick="editTeam(this, ${game.leagueId}, ${game.awayParticipantId})"
-                             title="Click to edit team">
-                            ${game.awayTeam || 'TBD'}
+            <div class="event-card ${isInactive ? 'inactive' : ''}" data-event-id="${game.eventId}" data-league-id="${game.leagueId || ''}">
+                <div class="event-card-header">
+                    <div class="event-teams">
+                        <div class="team-row">
+                            <div class="team-name editable-team"
+                                 data-participant-id="${game.awayParticipantId || ''}"
+                                 data-team-id="${game.awayTeamId || ''}"
+                                 onclick="editTeam(this, ${game.leagueId}, ${game.awayParticipantId})"
+                                 title="Click to edit team">
+                                ${game.awayTeam || 'TBD'}
+                            </div>
+                            ${hasScore ? `<div class="team-score">${score1Display}</div>` : ''}
+                            <div class="event-time editable-time"
+                                 onclick="editTime(this, ${game.eventId}, '${game.time || ''}', ${game.tba || 0}, '${game.date || ''}')"
+                                 title="Click to edit time">
+                                ${dateTimeDisplay}
+                            </div>
                         </div>
-                        ${hasScore ? `<div class="team-score">${score1Display}</div>` : ''}
-                        <div class="event-time editable-time"
-                             onclick="editTime(this, ${game.eventId}, '${game.time || ''}', ${game.tba || 0}, '${game.date || ''}')"
-                             title="Click to edit time">
-                            ${dateTimeDisplay}
+                        <div class="team-row">
+                            <div class="team-name editable-team"
+                                 data-participant-id="${game.homeParticipantId || ''}"
+                                 data-team-id="${game.homeTeamId || ''}"
+                                 onclick="editTeam(this, ${game.leagueId}, ${game.homeParticipantId})"
+                                 title="Click to edit team">
+                                ${game.homeTeam || 'TBD'}
+                            </div>
+                            ${hasScore ? `<div class="team-score">${score2Display}</div>` : ''}
+                            <div class="event-number">#${game.number || game.eventId}</div>
                         </div>
                     </div>
-                    <div class="team-row">
-                        <div class="team-name editable-team"
-                             data-participant-id="${game.homeParticipantId || ''}"
-                             data-team-id="${game.homeTeamId || ''}"
-                             onclick="editTeam(this, ${game.leagueId}, ${game.homeParticipantId})"
-                             title="Click to edit team">
-                            ${game.homeTeam || 'TBD'}
-                        </div>
-                        ${hasScore ? `<div class="team-score">${score2Display}</div>` : ''}
-                        <div class="event-number">#${game.number || game.eventId}</div>
+                    <div class="event-actions">
+                        <button class="icon-btn-small" onclick="editGame(${game.eventId})" title="Edit Game">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn-small" onclick="deleteGame(${game.eventId})" title="Delete Game">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 ${hasStatus ? `
@@ -574,7 +600,27 @@ function displayEvents(games) {
                 ` : ''}
             </div>
         `;
-    }).join('');
+    };
+
+    // Build the HTML with active games first, then inactive games
+    let html = '';
+
+    // Add active games
+    if (sortedActiveGames.length > 0) {
+        html += sortedActiveGames.map(game => renderGameCard(game, false)).join('');
+    }
+
+    // Add inactive games section if there are any
+    if (sortedInactiveGames.length > 0) {
+        html += `
+            <div class="deactivated-section">
+                <div class="deactivated-label">Deactivated Games</div>
+            </div>
+        `;
+        html += sortedInactiveGames.map(game => renderGameCard(game, true)).join('');
+    }
+
+    container.innerHTML = html;
 }
 
 function clearEvents() {
@@ -944,6 +990,207 @@ async function addEvent() {
 
     // Show add game modal
     await showAddGameModal();
+}
+
+async function editGame(eventId) {
+    // Find the game in the current events
+    const game = state.events.find(e => e.eventId === eventId);
+    if (!game) {
+        showError('Game not found');
+        return;
+    }
+
+    const group = state.selectedGroup;
+    const leagueId = game.leagueId || (group.league ? group.league.id : null);
+
+    if (!leagueId) {
+        showError('No league associated with this game');
+        return;
+    }
+
+    // Fetch teams and store globally for later use
+    const teams = await fetch(`${API_BASE_URL}/games/league/${leagueId}/teams`).then(r => r.json());
+    window.currentGameTeams = teams;
+
+    // Parse the time if it exists
+    let timeValue = '';
+    let dateValue = game.date || '';
+    if (game.time) {
+        const gameTime = new Date(game.time);
+        // Format time as HH:MM for the time input
+        timeValue = gameTime.toTimeString().substring(0, 5);
+        // Use the date from the time field
+        dateValue = gameTime.toISOString().split('T')[0];
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content add-group-modal">
+            <div class="modal-header">
+                <h3>Edit Game</h3>
+                <button class="modal-close" onclick="closeEditGameModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="edit-game-date">Date:</label>
+                        <input type="date" id="edit-game-date" class="form-input" value="${dateValue}">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-game-time">Time:</label>
+                        <input type="time" id="edit-game-time" class="form-input" value="${timeValue}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="edit-game-tba" ${game.tba ? 'checked' : ''}> Time TBA
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-event-number">Event Number:</label>
+                    <input type="number" id="edit-event-number" class="form-input" value="${game.number || ''}" placeholder="e.g., 101">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-away-team">Away Team:</label>
+                    <input type="text"
+                           id="edit-away-team"
+                           class="form-input searchable-team"
+                           value="${game.awayTeam || ''}"
+                           placeholder="Type to search teams..."
+                           autocomplete="off"
+                           data-team-id="${game.awayTeamId || ''}"
+                           data-participant-id="${game.awayParticipantId || ''}">
+                    <div id="edit-away-team-dropdown" class="team-dropdown" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-home-team">Home Team:</label>
+                    <input type="text"
+                           id="edit-home-team"
+                           class="form-input searchable-team"
+                           value="${game.homeTeam || ''}"
+                           placeholder="Type to search teams..."
+                           autocomplete="off"
+                           data-team-id="${game.homeTeamId || ''}"
+                           data-participant-id="${game.homeParticipantId || ''}">
+                    <div id="edit-home-team-dropdown" class="team-dropdown" style="display: none;"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeEditGameModal()">Cancel</button>
+                    <button class="btn-primary" onclick="saveEditedGame(${eventId})">Update Game</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Setup team search for edit modal
+    setupTeamSearch('edit-away-team', 'edit-away-team-dropdown', teams);
+    setupTeamSearch('edit-home-team', 'edit-home-team-dropdown', teams);
+}
+
+function closeEditGameModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+async function saveEditedGame(eventId) {
+    const date = document.getElementById('edit-game-date').value;
+    const time = document.getElementById('edit-game-time').value;
+    const tba = document.getElementById('edit-game-tba').checked;
+    const eventNumber = document.getElementById('edit-event-number').value;
+    const awayTeamInput = document.getElementById('edit-away-team');
+    const homeTeamInput = document.getElementById('edit-home-team');
+    const awayTeamId = awayTeamInput.dataset.teamId;
+    const homeTeamId = homeTeamInput.dataset.teamId;
+    const awayParticipantId = awayTeamInput.dataset.participantId;
+    const homeParticipantId = homeTeamInput.dataset.participantId;
+
+    if (!date) {
+        showError('Please select a date');
+        return;
+    }
+
+    if (!tba && !time) {
+        showError('Please enter a time or check TBA');
+        return;
+    }
+
+    try {
+        // Get the current event to preserve other fields
+        const game = state.events.find(e => e.eventId === eventId);
+
+        // Update event number if changed
+        if (eventNumber && game) {
+            const eventResponse = await fetch(`${API_BASE_URL}/events/${eventId}`);
+            const event = await eventResponse.json();
+            event.number = parseInt(eventNumber);
+
+            await fetch(`${API_BASE_URL}/events/${eventId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(event)
+            });
+        }
+
+        // Update time
+        const timeString = tba ? null : `${date}T${time}:00`;
+        await fetch(`${API_BASE_URL}/games/event/${eventId}/time`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                time: timeString,
+                tba: tba ? 1 : 0
+            })
+        });
+
+        // Update teams if they have changed
+        if (awayTeamId && awayParticipantId) {
+            await fetch(`${API_BASE_URL}/games/participant/${awayParticipantId}/team`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ leagueTeamId: parseInt(awayTeamId) })
+            });
+        }
+
+        if (homeTeamId && homeParticipantId) {
+            await fetch(`${API_BASE_URL}/games/participant/${homeParticipantId}/team`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ leagueTeamId: parseInt(homeTeamId) })
+            });
+        }
+
+        closeEditGameModal();
+        await loadEvents(state.selectedGroup.id);
+        showSuccess('Game updated successfully');
+    } catch (error) {
+        console.error('Error updating game:', error);
+        showError('Failed to update game: ' + error.message);
+    }
+}
+
+async function deleteGame(eventId) {
+    if (!confirm('Are you sure you want to delete this game?')) return;
+
+    try {
+        await fetch(`${API_BASE_URL}/events/${eventId}`, {
+            method: 'DELETE'
+        });
+        await loadEvents(state.selectedGroup.id);
+        showSuccess('Game deleted successfully');
+    } catch (error) {
+        console.error('Error deleting game:', error);
+        showError('Failed to delete game');
+    }
 }
 
 async function showAddGameModal() {

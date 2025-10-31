@@ -34,6 +34,9 @@ public class Event {
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @Column(name = "active")
+    private Boolean active;
+
     @Column(name = "double_header")
     private Integer doubleHeader;
 
@@ -57,6 +60,7 @@ public class Event {
         this.date = date;
         this.number = number;
         this.league = league;
+        this.active = true;
         this.doubleHeader = 0;
     }
     
@@ -99,6 +103,14 @@ public class Event {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Integer getDoubleHeader() {

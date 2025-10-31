@@ -21,6 +21,7 @@ public class GameDTO {
     private Integer homeTeamId;
     private Integer homeParticipantId;
     private Integer leagueId;
+    private Boolean active;  // Whether the game is active or deactivated
 
     // Score information
     private Integer score1;  // Away score
@@ -132,6 +133,14 @@ public class GameDTO {
 
     public void setLeagueId(Integer leagueId) {
         this.leagueId = leagueId;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Integer getScore1() {
