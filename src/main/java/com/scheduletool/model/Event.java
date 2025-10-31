@@ -30,6 +30,10 @@ public class Event {
     @JoinColumn(name = "league_id", nullable = false)
     private League league;
 
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
+
     @Column(name = "double_header")
     private Integer doubleHeader;
 
@@ -87,6 +91,14 @@ public class Event {
     
     public void setLeague(League league) {
         this.league = league;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public Integer getDoubleHeader() {

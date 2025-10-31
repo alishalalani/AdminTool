@@ -21,6 +21,7 @@ com\scheduletool\model\EventTime.class
 com\scheduletool\model\PresetMessage.class
 com\scheduletool\repository\LocationRepository.class
 com\scheduletool\model\EventGroupType.class
+com\scheduletool\repository\EventVenueRepository.class
 com\scheduletool\repository\EventTimeRepository.class
 com\scheduletool\repository\ParticipantRepository.class
 com\scheduletool\service\PlayerService.class
@@ -43,6 +44,7 @@ com\scheduletool\dto\GameDTO.class
 com\scheduletool\model\Venue.class
 com\scheduletool\repository\TeamRepository.class
 com\scheduletool\model\Category.class
+com\scheduletool\controller\VenueController.class
 com\scheduletool\model\GroupEvent$GroupEventId.class
 com\scheduletool\model\LineserverSportsbook.class
 com\scheduletool\controller\CategoryController.class

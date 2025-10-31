@@ -5,6 +5,7 @@ import com.scheduletool.model.EventTime;
 import com.scheduletool.model.ParticipantLeagueTeam;
 import com.scheduletool.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,6 +106,22 @@ public class GameController {
     public ResponseEntity<List<Map<String, Object>>> getTeamsByLeagueId(@PathVariable Integer leagueId) {
         List<Map<String, Object>> teams = gameService.getTeamsByLeagueId(leagueId);
         return ResponseEntity.ok(teams);
+    }
+
+    /**
+     * Create a new game
+     * @param request Map containing game creation data
+     * @return Created GameDTO
+     */
+    @PostMapping
+    public ResponseEntity<GameDTO> createGame(@RequestBody Map<String, Object> request) {
+        try {
+            GameDTO game = gameService.createGame(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(game);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
 

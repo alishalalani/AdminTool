@@ -6,7 +6,9 @@ C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\mo
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\dto\GameDTO.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\Player.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\VenueRepository.java
+C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\EventVenueRepository.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\ScheduleRepository.java
+C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\controller\VenueController.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\LineserverSportsbook.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\SportsbookRepository.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\EventGroupTypeRepository.java

@@ -771,35 +771,206 @@ async function deleteGroup(groupId) {
 }
 
 // CRUD Operations - Events
-function addEvent() {
+async function addEvent() {
     if (!state.selectedGroup) {
         showError('Please select a group first');
         return;
     }
 
-    const time = prompt('Enter game time (e.g., "7:00 PM"):');
-    if (!time) return;
+    // Show add game modal
+    await showAddGameModal();
+}
 
-    const event = {
+async function showAddGameModal() {
+    const group = state.selectedGroup;
+    const leagueId = group.league ? group.league.id : null;
+
+    if (!leagueId) {
+        showError('No league associated with this group');
+        return;
+    }
+
+    // Fetch teams
+    const teams = await fetch(`${API_BASE_URL}/games/league/${leagueId}/teams`).then(r => r.json());
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>Add Game</h2>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="game-date">Date:</label>
+                        <input type="date" id="game-date" class="form-input" value="${group.date}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="game-time">Time:</label>
+                        <input type="time" id="game-time" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="game-tba"> Time TBA
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="event-number">Event Number:</label>
+                    <input type="number" id="event-number" class="form-input" placeholder="e.g., 101" required>
+                    <small style="color: #666; font-size: 0.85rem;">First team will be #N, second team will be #N+1</small>
+                </div>
+
+                <div class="form-grid" style="grid-template-columns: auto 1fr; gap: 1rem; align-items: center;">
+                    <div style="text-align: center; font-weight: bold; color: #666;">
+                        <div id="away-team-number" style="font-size: 1.2rem; margin-bottom: 0.5rem;">-</div>
+                        <div style="font-size: 0.75rem;">AWAY</div>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label for="away-team">Away Team:</label>
+                        <select id="away-team" class="form-input">
+                            <option value="">Select Team...</option>
+                            ${teams.map(t => `<option value="${t.leagueTeamId}">${t.teamName}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid" style="grid-template-columns: auto 1fr; gap: 1rem; align-items: center; margin-top: 1rem;">
+                    <div style="text-align: center; font-weight: bold; color: #666;">
+                        <div id="home-team-number" style="font-size: 1.2rem; margin-bottom: 0.5rem;">-</div>
+                        <div style="font-size: 0.75rem;">HOME</div>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label for="home-team">Home Team:</label>
+                        <select id="home-team" class="form-input">
+                            <option value="">Select Team...</option>
+                            ${teams.map(t => `<option value="${t.leagueTeamId}">${t.teamName}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label style="font-weight: bold; margin-bottom: 0.5rem; display: block;">Venue</label>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                        <label>
+                            <input type="checkbox" id="venue-neutral"> Neutral Site
+                        </label>
+                        <label>
+                            <input type="checkbox" id="venue-override"> Override
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="venue-name">Venue Name:</label>
+                        <input type="text" id="venue-name" class="form-input" placeholder="Enter venue name (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="venue-city">Venue City:</label>
+                        <input type="text" id="venue-city" class="form-input" placeholder="Enter venue city (optional)">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+                <button class="btn-primary" onclick="saveNewGame()">Add Game</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Update event numbers when event number changes
+    const eventNumberInput = document.getElementById('event-number');
+    eventNumberInput.addEventListener('input', updateEventNumbers);
+
+    // Initial update
+    updateEventNumbers();
+}
+
+function updateEventNumbers() {
+    const eventNumber = document.getElementById('event-number').value;
+    const awayNumberEl = document.getElementById('away-team-number');
+    const homeNumberEl = document.getElementById('home-team-number');
+
+    if (eventNumber && !isNaN(eventNumber)) {
+        const num = parseInt(eventNumber);
+        awayNumberEl.textContent = num;
+        homeNumberEl.textContent = num + 1;
+    } else {
+        awayNumberEl.textContent = '-';
+        homeNumberEl.textContent = '-';
+    }
+}
+
+async function saveNewGame() {
+    const date = document.getElementById('game-date').value;
+    const time = document.getElementById('game-time').value;
+    const tba = document.getElementById('game-tba').checked ? 1 : 0;
+    const eventNumber = parseInt(document.getElementById('event-number').value);
+    const awayTeamId = document.getElementById('away-team').value;
+    const homeTeamId = document.getElementById('home-team').value;
+    const venueName = document.getElementById('venue-name').value;
+    const venueCity = document.getElementById('venue-city').value;
+    const neutral = document.getElementById('venue-neutral').checked;
+    const override = document.getElementById('venue-override').checked;
+
+    // Validation
+    if (!date) {
+        showError('Please select a date');
+        return;
+    }
+    if (!eventNumber) {
+        showError('Please enter an event number');
+        return;
+    }
+    if (!tba && !time) {
+        showError('Please enter a time or check TBA');
+        return;
+    }
+
+    const gameData = {
+        groupId: state.selectedGroup.id,
+        leagueId: state.selectedGroup.league ? state.selectedGroup.league.id : null,
+        date: date,
         time: time,
-        category: { id: state.selectedGroup.id },
-        active: true
+        tba: tba,
+        eventNumber: eventNumber,
+        homeTeamId: (homeTeamId && homeTeamId !== '' && homeTeamId !== 'undefined') ? parseInt(homeTeamId) : null,
+        awayTeamId: (awayTeamId && awayTeamId !== '' && awayTeamId !== 'undefined') ? parseInt(awayTeamId) : null,
+        venueName: venueName || null,
+        venueCity: venueCity || null,
+        neutral: neutral,
+        override: override
     };
 
-    fetch(`${API_BASE_URL}/events`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(event)
-    })
-    .then(response => response.json())
-    .then(() => {
-        loadEvents(state.selectedGroup.id);
+    try {
+        const response = await fetch(`${API_BASE_URL}/games`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gameData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create game');
+        }
+
+        // Close modal
+        document.querySelector('.modal-overlay').remove();
+
+        // Reload events
+        await loadEvents(state.selectedGroup.id);
         showSuccess('Game added successfully');
-    })
-    .catch(error => {
-        console.error('Error adding event:', error);
-        showError('Failed to add game');
-    });
+    } catch (error) {
+        console.error('Error creating game:', error);
+        showError('Failed to add game: ' + error.message);
+    }
 }
 
 // Utility functions

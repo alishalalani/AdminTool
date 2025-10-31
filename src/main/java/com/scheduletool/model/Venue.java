@@ -8,9 +8,6 @@ import java.time.OffsetDateTime;
  * Replaces gsutils.data.Venue
  */
 @Entity
- 
-    
-
 @Table(name = "venue")
 public class Venue {
     
