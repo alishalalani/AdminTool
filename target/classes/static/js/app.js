@@ -1788,6 +1788,10 @@ async function editTeam(element, leagueId, participantId, eventId) {
         return;
     }
 
+    // Get the current team name from the clicked element
+    const currentTeamName = element.textContent.trim();
+    console.log('Current team name:', currentTeamName);
+
     try {
         // Fetch teams for this league
         const response = await fetch(`${API_BASE_URL}/games/league/${leagueId}/teams`);
@@ -1805,8 +1809,8 @@ async function editTeam(element, leagueId, participantId, eventId) {
             return;
         }
 
-        // Show team selection modal
-        showTeamSelectionModal(validTeams, participantId, eventId);
+        // Show team selection modal with current team name
+        showTeamSelectionModal(validTeams, participantId, eventId, currentTeamName);
     } catch (error) {
         console.error('Error fetching teams:', error);
         showError('Failed to load teams');
@@ -1814,8 +1818,10 @@ async function editTeam(element, leagueId, participantId, eventId) {
 }
 
 // Show team selection modal
-function showTeamSelectionModal(teams, participantId, eventId) {
+function showTeamSelectionModal(teams, participantId, eventId, currentTeamName = '') {
     console.log ("teams lebgth: ", teams.length);
+    console.log ("current team name: ", currentTeamName);
+
     // Create modal overlay
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
@@ -1852,8 +1858,12 @@ function showTeamSelectionModal(teams, participantId, eventId) {
         const searchInput = document.getElementById('team-search');
         searchInput.focus();
 
-        // Highlight first team initially
-        highlightFirstVisibleTeam();
+        // Highlight current team if provided, otherwise highlight first team
+        if (currentTeamName && currentTeamName !== 'TBD') {
+            highlightTeamByName(currentTeamName);
+        } else {
+            highlightFirstVisibleTeam();
+        }
 
         // Add keyboard event listener for Enter key and arrow keys
         searchInput.addEventListener('keydown', (e) => {
@@ -1893,6 +1903,30 @@ function filterTeams() {
     });
 
     // Highlight the first visible team after filtering
+    highlightFirstVisibleTeam();
+}
+
+// Highlight a specific team by name
+function highlightTeamByName(teamName) {
+    const teamItems = document.querySelectorAll('.team-item');
+    const normalizedSearchName = teamName.toLowerCase().trim();
+
+    // Remove highlight from all items
+    teamItems.forEach(item => item.classList.remove('highlighted'));
+
+    // Find and highlight the matching team
+    for (let item of teamItems) {
+        const itemName = item.textContent.trim().toLowerCase();
+        if (itemName === normalizedSearchName) {
+            console.log('Highlighting current team:', item.textContent.trim());
+            item.classList.add('highlighted');
+            item.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            return; // Found and highlighted
+        }
+    }
+
+    // If no match found, highlight first visible team as fallback
+    console.log('Team not found, highlighting first visible team');
     highlightFirstVisibleTeam();
 }
 
