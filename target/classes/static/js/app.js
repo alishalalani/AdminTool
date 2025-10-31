@@ -14,6 +14,15 @@ let state = {
     events: []
 };
 
+// Helper function to format date without timezone issues
+function formatDateLocal(dateString) {
+    if (!dateString) return 'No date';
+    // Parse the date as local time (YYYY-MM-DD)
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
+    return date.toLocaleDateString();
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Intel Odds Schedule Manager initialized');
@@ -272,7 +281,7 @@ function selectLeague(leagueId) {
 }
 
 // Load groups
-function loadGroups() {
+async function loadGroups() {
     if (!state.selectedLeague) {
         clearGroups();
         return;
@@ -287,30 +296,28 @@ function loadGroups() {
     console.log('Loading groups from URL:', url);
     console.log('Selected date:', state.selectedDate);
 
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(groups => {
-            console.log('Loaded groups for league', state.selectedLeague.id, 'and date', state.selectedDate, ':', groups);
-            console.log('Number of groups returned:', groups.length);
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const groups = await response.json();
 
-            // Log each group's details
-            groups.forEach(group => {
-                console.log(`  Group ID: ${group.id}, Date: ${group.date}, Header: ${group.header}`);
-            });
+        console.log('Loaded groups for league', state.selectedLeague.id, 'and date', state.selectedDate, ':', groups);
+        console.log('Number of groups returned:', groups.length);
 
-            state.groups = groups;
-            displayGroups(groups);
-        })
-        .catch(error => {
-            console.error('Error loading groups:', error);
-            showError('Failed to load groups');
-            document.getElementById('groups-container').innerHTML = '<div class="empty-state"><p>Error loading groups</p></div>';
+        // Log each group's details
+        groups.forEach(group => {
+            console.log(`  Group ID: ${group.id}, Date: ${group.date}, Header: ${group.header}`);
         });
+
+        state.groups = groups;
+        await displayGroups(groups);
+    } catch (error) {
+        console.error('Error loading groups:', error);
+        showError('Failed to load groups');
+        document.getElementById('groups-container').innerHTML = '<div class="empty-state"><p>Error loading groups</p></div>';
+    }
 }
 
 async function displayGroups(groups) {
@@ -359,7 +366,7 @@ async function displayGroups(groups) {
                                 <line x1="8" y1="2" x2="8" y2="6"/>
                                 <line x1="3" y1="10" x2="21" y2="10"/>
                             </svg>
-                            <span>${group.date ? new Date(group.date).toLocaleDateString() : 'No date'}</span>
+                            <span>${formatDateLocal(group.date)}</span>
                         </div>
                         <div class="group-meta-item">
                             <span>ID: ${group.id}</span>
@@ -639,7 +646,7 @@ function closeAddGroupModal() {
     }
 }
 
-function saveNewGroup() {
+async function saveNewGroup() {
     const header = document.getElementById('group-header').value.trim();
     const startDate = document.getElementById('group-start-date').value;
     const endDate = document.getElementById('group-end-date').value;
@@ -675,22 +682,21 @@ function saveNewGroup() {
 
     console.log('Creating group:', group);
 
-    fetch(`${API_BASE_URL}/categories`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(group)
-    })
-    .then(response => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/categories`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(group)
+        });
+
         console.log('Create group response status:', response.status);
         if (!response.ok) {
-            return response.text().then(text => {
-                console.error('Error response:', text);
-                throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-            });
+            const text = await response.text();
+            console.error('Error response:', text);
+            throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
         }
-        return response.json();
-    })
-    .then(createdGroup => {
+
+        const createdGroup = await response.json();
         console.log('Group created successfully:', createdGroup);
         console.log('Created group details - ID:', createdGroup.id, 'Date:', createdGroup.date, 'Header:', createdGroup.header);
         closeAddGroupModal();
@@ -702,16 +708,30 @@ function saveNewGroup() {
             document.getElementById('schedule-date').value = createdGroup.date;
         }
 
-        loadGroups();
+        // Reload groups and wait for it to complete
+        await loadGroups();
+
+        // Scroll to the newly created group
+        setTimeout(() => {
+            const groupCard = document.querySelector(`.group-card[onclick*="${createdGroup.id}"]`);
+            if (groupCard) {
+                groupCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Briefly highlight the new group
+                groupCard.style.backgroundColor = '#e3f2fd';
+                setTimeout(() => {
+                    groupCard.style.backgroundColor = '';
+                }, 2000);
+            }
+        }, 100);
+
         showSuccess('Group added successfully');
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error adding group:', error);
         showError('Failed to add group: ' + error.message);
-    });
+    }
 }
 
-function editGroup(groupId) {
+async function editGroup(groupId) {
     const group = state.groups.find(c => c.id === groupId);
     if (!group) return;
 
@@ -720,36 +740,34 @@ function editGroup(groupId) {
 
     group.header = newHeader;
 
-    fetch(`${API_BASE_URL}/categories/${groupId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(group)
-    })
-    .then(response => response.json())
-    .then(() => {
-        loadGroups();
+    try {
+        const response = await fetch(`${API_BASE_URL}/categories/${groupId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(group)
+        });
+        await response.json();
+        await loadGroups();
         showSuccess('Group updated successfully');
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error updating group:', error);
         showError('Failed to update group');
-    });
+    }
 }
 
-function deleteGroup(groupId) {
+async function deleteGroup(groupId) {
     if (!confirm('Are you sure you want to delete this group?')) return;
 
-    fetch(`${API_BASE_URL}/categories/${groupId}`, {
-        method: 'DELETE'
-    })
-    .then(() => {
-        loadGroups();
+    try {
+        await fetch(`${API_BASE_URL}/categories/${groupId}`, {
+            method: 'DELETE'
+        });
+        await loadGroups();
         showSuccess('Group deleted successfully');
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error deleting group:', error);
         showError('Failed to delete group');
-    });
+    }
 }
 
 // CRUD Operations - Events

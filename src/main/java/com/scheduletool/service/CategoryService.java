@@ -31,15 +31,15 @@ public class CategoryService {
     }
     
     public List<Category> getCategoriesByLeague(League league) {
-        return categoryRepository.findByLeague(league);
+        return categoryRepository.findByLeagueOrderByDateAsc(league);
     }
 
     public List<Category> getCategoriesByLeagueId(Integer leagueId) {
-        return categoryRepository.findByLeagueId(leagueId);
+        return categoryRepository.findByLeagueIdOrderByDateAsc(leagueId);
     }
 
     public List<Category> getUpcomingCategoriesByLeagueId(Integer leagueId) {
-        return categoryRepository.findByLeagueIdAndDateGreaterThanEqual(leagueId, LocalDate.now());
+        return categoryRepository.findByLeagueIdAndDateGreaterThanEqualOrderByDateAsc(leagueId, LocalDate.now());
     }
 
     public List<Category> getCategoriesByLeagueIdAndDate(Integer leagueId, LocalDate date) {
@@ -47,12 +47,12 @@ public class CategoryService {
         System.out.println("CategoryService: Date parameter type: " + date.getClass().getName());
         System.out.println("CategoryService: Date parameter value: " + date.toString());
 
-        List<Category> categories = categoryRepository.findByLeagueIdAndDateGreaterThanEqual(leagueId, date);
+        List<Category> categories = categoryRepository.findByLeagueIdAndDateGreaterThanEqualOrderByDateAsc(leagueId, date);
 
         System.out.println("CategoryService: Found " + categories.size() + " categories");
 
         // Check if there are any categories with date = 2025-10-31
-        List<Category> allCategories = categoryRepository.findByLeagueId(leagueId);
+        List<Category> allCategories = categoryRepository.findByLeagueIdOrderByDateAsc(leagueId);
         System.out.println("CategoryService: Total categories for league " + leagueId + ": " + allCategories.size());
         long oct31Count = allCategories.stream()
             .filter(c -> c.getDate().equals(LocalDate.of(2025, 10, 31)))
@@ -66,15 +66,15 @@ public class CategoryService {
     }
 
     public List<Category> getCategoriesByDate(LocalDate date) {
-        return categoryRepository.findByDate(date);
+        return categoryRepository.findByDateOrderByDateAsc(date);
     }
-    
+
     public List<Category> getCategoriesByLeagueAndDate(League league, LocalDate date) {
-        return categoryRepository.findByLeagueAndDate(league, date);
+        return categoryRepository.findByLeagueAndDateOrderByDateAsc(league, date);
     }
-    
+
     public List<Category> getCategoriesByDateRange(LocalDate startDate, LocalDate endDate) {
-        return categoryRepository.findByDateBetween(startDate, endDate);
+        return categoryRepository.findByDateBetweenOrderByDateAsc(startDate, endDate);
     }
     
     public Category createCategory(Category category) {
