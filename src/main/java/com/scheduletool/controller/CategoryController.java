@@ -38,6 +38,14 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
+    @GetMapping("/league/{leagueId}/date/{date}")
+    public ResponseEntity<List<Category>> getCategoriesByLeagueIdAndDate(
+            @PathVariable Integer leagueId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<Category> categories = categoryService.getCategoriesByLeagueIdAndDate(leagueId, date);
+        return ResponseEntity.ok(categories);
+    }
+
     @GetMapping("/date/{date}")
     public ResponseEntity<List<Category>> getCategoriesByDate(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {

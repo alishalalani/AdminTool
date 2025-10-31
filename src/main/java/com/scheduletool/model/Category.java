@@ -34,7 +34,14 @@ public class Category {
     
     @Column(name = "header", columnDefinition = "TEXT")
     private String header;
-    
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "event_group_type_id")
+    private EventGroupType eventGroupType;
+
     @Column(name = "exclude")
     private Boolean exclude;
 
@@ -104,9 +111,25 @@ public class Category {
     public Boolean getOverride() {
         return override;
     }
-    
+
     public void setOverride(Boolean override) {
         this.override = override;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public EventGroupType getEventGroupType() {
+        return eventGroupType;
+    }
+
+    public void setEventGroupType(EventGroupType eventGroupType) {
+        this.eventGroupType = eventGroupType;
     }
 
     @Override

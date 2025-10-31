@@ -38,6 +38,16 @@ public class CategoryService {
         return categoryRepository.findByLeagueIdAndDateGreaterThanEqual(leagueId, LocalDate.now());
     }
 
+    public List<Category> getCategoriesByLeagueIdAndDate(Integer leagueId, LocalDate date) {
+        System.out.println("CategoryService: Getting categories for leagueId=" + leagueId + " and date>=" + date);
+        List<Category> categories = categoryRepository.findByLeagueIdAndDateGreaterThanEqual(leagueId, date);
+        System.out.println("CategoryService: Found " + categories.size() + " categories");
+        for (Category cat : categories) {
+            System.out.println("  - Category ID=" + cat.getId() + ", date=" + cat.getDate() + ", header=" + cat.getHeader());
+        }
+        return categories;
+    }
+
     public List<Category> getCategoriesByDate(LocalDate date) {
         return categoryRepository.findByDate(date);
     }
@@ -57,14 +67,16 @@ public class CategoryService {
     public Category updateCategory(Integer id, Category categoryDetails) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
-        
+
         category.setLeague(categoryDetails.getLeague());
         category.setDate(categoryDetails.getDate());
         category.setEndDate(categoryDetails.getEndDate());
         category.setHeader(categoryDetails.getHeader());
+        category.setDescription(categoryDetails.getDescription());
+        category.setEventGroupType(categoryDetails.getEventGroupType());
         category.setExclude(categoryDetails.getExclude());
         category.setOverride(categoryDetails.getOverride());
-        
+
         return categoryRepository.save(category);
     }
     

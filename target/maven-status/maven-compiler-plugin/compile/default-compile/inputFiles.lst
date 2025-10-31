@@ -9,6 +9,7 @@ C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\re
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\ScheduleRepository.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\LineserverSportsbook.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\SportsbookRepository.java
+C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\EventGroupTypeRepository.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\LeaguePlayer.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\service\GameService.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\GroupEvent.java
@@ -50,15 +51,18 @@ C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\re
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\controller\CategoryController.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\Sport.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\LocationRepository.java
+C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\EventGroupType.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\CategoryRepository.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\EventItemLeagueTeam.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\controller\SportController.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\service\ScoreService.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\LeaguePosition.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\TeamRepository.java
+C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\service\EventGroupTypeService.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\ParticipantLeagueTeam.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\repository\SourceRepository.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\ScheduleToolApplication.java
+C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\controller\EventGroupTypeController.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\service\ScheduleService.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\service\SportService.java
 C:\Users\slalani\Documents\GitHub\ScheduleTool\src\main\java\com\scheduletool\model\Participant.java

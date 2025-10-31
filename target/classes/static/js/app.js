@@ -171,7 +171,7 @@ function displaySports(sports) {
         return;
     }
 
-    sportSelect.innerHTML = '<option value="">Select Sport...</option>' +
+    sportSelect.innerHTML = '<option value="">Select Sport</option>' +
         activeSports.map(sport => `
             <option value="${sport.id}">${sport.name}</option>
         `).join('');
@@ -278,7 +278,16 @@ function loadGroups() {
         return;
     }
 
-    fetch(`${API_BASE_URL}/categories/league/${state.selectedLeague.id}`)
+    if (!state.selectedDate) {
+        clearGroups();
+        return;
+    }
+
+    const url = `${API_BASE_URL}/categories/league/${state.selectedLeague.id}/date/${state.selectedDate}`;
+    console.log('Loading groups from URL:', url);
+    console.log('Selected date:', state.selectedDate);
+
+    fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -286,7 +295,8 @@ function loadGroups() {
             return response.json();
         })
         .then(groups => {
-            console.log('Loaded groups for league', state.selectedLeague.id, ':', groups);
+            console.log('Loaded groups for league', state.selectedLeague.id, 'and date', state.selectedDate, ':', groups);
+            console.log('Number of groups returned:', groups.length);
             state.groups = groups;
             displayGroups(groups);
         })
@@ -530,29 +540,146 @@ function clearEvents() {
 }
 
 // CRUD Operations - Groups
-function addGroup() {
+async function addGroup() {
     if (!state.selectedLeague) {
         showError('Please select a league first');
         return;
     }
 
-    const header = prompt('Enter group header (e.g., "NFL - Thursday October 22nd"):');
-    if (!header) return;
+    // Fetch event group types
+    let eventGroupTypes = [];
+    try {
+        const response = await fetch(`${API_BASE_URL}/event-group-types`);
+        eventGroupTypes = await response.json();
+    } catch (error) {
+        console.error('Error loading event group types:', error);
+    }
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content add-group-modal">
+            <div class="modal-header">
+                <h3>Add Group</h3>
+                <button class="modal-close" onclick="closeAddGroupModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="group-header">Group Header:</label>
+                    <input type="text"
+                           id="group-header"
+                           class="form-input"
+                           placeholder='e.g., "NFL - Thursday October 22nd"'>
+                </div>
+
+                <div class="form-group">
+                    <label for="group-start-date">Start Date:</label>
+                    <input type="date"
+                           id="group-start-date"
+                           class="form-input"
+                           value="${state.selectedDate}">
+                </div>
+
+                <div class="form-group">
+                    <label for="group-end-date">End Date:</label>
+                    <input type="date"
+                           id="group-end-date"
+                           class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="group-type">Group Type:</label>
+                    <select id="group-type" class="form-input">
+                        <option value="">Select Type...</option>
+                        ${eventGroupTypes.map(type => `<option value="${type.id}">${type.name}</option>`).join('')}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="group-description">Description:</label>
+                    <textarea id="group-description"
+                              class="form-input"
+                              rows="3"
+                              placeholder="Enter description..."></textarea>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="group-exclude">
+                        Exclude
+                    </label>
+                    <label>
+                        <input type="checkbox" id="group-override">
+                        Override
+                    </label>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeAddGroupModal()">Cancel</button>
+                    <button class="btn-primary" onclick="saveNewGroup()">Add Group</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+function closeAddGroupModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function saveNewGroup() {
+    const header = document.getElementById('group-header').value.trim();
+    const startDate = document.getElementById('group-start-date').value;
+    const endDate = document.getElementById('group-end-date').value;
+    const groupTypeId = document.getElementById('group-type').value;
+    const description = document.getElementById('group-description').value.trim();
+    const exclude = document.getElementById('group-exclude').checked;
+    const override = document.getElementById('group-override').checked;
+
+    if (!header) {
+        showError('Please enter a group header');
+        return;
+    }
+
+    if (!startDate) {
+        showError('Please select a start date');
+        return;
+    }
 
     const group = {
         header: header,
-        date: state.selectedDate,
-        league: { id: state.selectedLeague.id },
-        active: true
+        date: startDate,
+        endDate: endDate || null,
+        description: description || null,
+        exclude: exclude,
+        override: override,
+        league: { id: state.selectedLeague.id }
     };
+
+    // Add event group type if selected
+    if (groupTypeId) {
+        group.eventGroupType = { id: parseInt(groupTypeId) };
+    }
 
     fetch(`${API_BASE_URL}/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(group)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(() => {
+        closeAddGroupModal();
         loadGroups();
         showSuccess('Group added successfully');
     })
