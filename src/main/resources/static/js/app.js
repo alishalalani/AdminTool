@@ -247,6 +247,18 @@ function displayLeagues(leagues) {
     `).join('');
 }
 
+function clearLeagues() {
+    const leaguesList = document.getElementById('leagues-list');
+    leaguesList.innerHTML = `
+        <div class="empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"/>
+            </svg>
+            <p>Select a sport to view leagues</p>
+        </div>
+    `;
+}
+
 function selectLeague(leagueId) {
     const league = state.leagues.find(l => l.id === leagueId);
     if (!league) return;

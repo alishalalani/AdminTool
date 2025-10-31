@@ -69,7 +69,12 @@
                     </button>
                 </div>
                 <div id="leagues-list" class="leagues-list">
-                    <!-- Leagues will be loaded here -->
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                        <p>Select a sport to view leagues</p>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -93,7 +98,12 @@
             </div>
 
             <div class="groups-container" id="groups-container">
-                <!-- Groups will be loaded here as cards -->
+                <div class="empty-state">
+                    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    </svg>
+                    <p>Select a league to view groups</p>
+                </div>
             </div>
         </main>
 
