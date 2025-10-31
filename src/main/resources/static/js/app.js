@@ -423,24 +423,21 @@ function clearGroups() {
 
 
 // Load events
-function loadEvents(groupId) {
-    fetch(`${API_BASE_URL}/games/group/${groupId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(games => {
-            console.log('Loaded games for group', groupId, ':', games);
-            state.events = games;
-            displayEvents(games);
-        })
-        .catch(error => {
-            console.error('Error loading games:', error);
-            showError('Failed to load games');
-            document.getElementById('events-container').innerHTML = '<div class="empty-state"><p>Error loading games</p></div>';
-        });
+async function loadEvents(groupId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/games/group/${groupId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const games = await response.json();
+        console.log('Loaded games for group', groupId, ':', games);
+        state.events = games;
+        displayEvents(games);
+    } catch (error) {
+        console.error('Error loading games:', error);
+        showError('Failed to load games');
+        document.getElementById('events-container').innerHTML = '<div class="empty-state"><p>Error loading games</p></div>';
+    }
 }
 
 function displayEvents(games) {
@@ -463,7 +460,20 @@ function displayEvents(games) {
         return;
     }
 
-    container.innerHTML = games.map(game => {
+    // Sort games by time
+    const sortedGames = [...games].sort((a, b) => {
+        // Handle TBA games - put them at the end
+        if (a.tba && !b.tba) return 1;
+        if (!a.tba && b.tba) return -1;
+        if (a.tba && b.tba) return 0;
+
+        // Sort by time
+        const timeA = a.time ? new Date(a.time).getTime() : 0;
+        const timeB = b.time ? new Date(b.time).getTime() : 0;
+        return timeA - timeB;
+    });
+
+    container.innerHTML = sortedGames.map(game => {
         // Debug logging
         console.log('Game data:', {
             eventId: game.eventId,
@@ -473,18 +483,48 @@ function displayEvents(games) {
             period: game.period
         });
 
-        // Format the time - check TBA first!
+        // Format the date and time
+        let dateDisplay = '';
         let timeDisplay = 'TBD';
+
+        // Format the time - check TBA first!
         if (game.tba === 1 || game.tba === true) {
             timeDisplay = 'TBA';
+            // For TBA games, use the event.date field for the date
+            if (game.date) {
+                const [year, month, day] = game.date.split('-').map(Number);
+                const gameDate = new Date(year, month - 1, day);
+                dateDisplay = gameDate.toLocaleDateString('en-US', {
+                    month: 'numeric',
+                    day: 'numeric'
+                });
+            }
         } else if (game.time) {
+            // For games with a time, extract both date and time from the time field
             const gameTime = new Date(game.time);
+            dateDisplay = gameTime.toLocaleDateString('en-US', {
+                month: 'numeric',
+                day: 'numeric'
+            });
             timeDisplay = gameTime.toLocaleTimeString('en-US', {
                 hour: 'numeric',
                 minute: '2-digit',
                 hour12: true
             });
+        } else {
+            // No time and not TBA - use event.date if available
+            if (game.date) {
+                const [year, month, day] = game.date.split('-').map(Number);
+                const gameDate = new Date(year, month - 1, day);
+                dateDisplay = gameDate.toLocaleDateString('en-US', {
+                    month: 'numeric',
+                    day: 'numeric'
+                });
+            }
         }
+
+        // Combine date and time for display
+        const dateTimeDisplay = dateDisplay ? `${dateDisplay} ${timeDisplay}` : timeDisplay;
 
         // Build score display
         const hasScore = game.score1 !== null || game.score2 !== null;
@@ -509,9 +549,9 @@ function displayEvents(games) {
                         </div>
                         ${hasScore ? `<div class="team-score">${score1Display}</div>` : ''}
                         <div class="event-time editable-time"
-                             onclick="editTime(this, ${game.eventId}, '${game.time || ''}', ${game.tba || 0})"
+                             onclick="editTime(this, ${game.eventId}, '${game.time || ''}', ${game.tba || 0}, '${game.date || ''}')"
                              title="Click to edit time">
-                            ${timeDisplay}
+                            ${dateTimeDisplay}
                         </div>
                     </div>
                     <div class="team-row">
@@ -1083,6 +1123,7 @@ async function saveNewGame() {
     };
 
     try {
+        console.log('Creating game with data:', gameData);
         const response = await fetch(`${API_BASE_URL}/games`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1090,13 +1131,34 @@ async function saveNewGame() {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to create game');
+            const errorText = await response.text();
+            console.error('Server error:', errorText);
+            throw new Error('Failed to create game: ' + errorText);
         }
+
+        const createdGame = await response.json();
+        console.log('Game created successfully:', createdGame);
 
         closeAddGameModal();
 
         // Reload events
+        console.log('Reloading events for group:', state.selectedGroup.id);
         await loadEvents(state.selectedGroup.id);
+
+        // Scroll to and highlight the newly created game
+        setTimeout(() => {
+            const eventCard = document.querySelector(`.event-card[data-event-id="${createdGame.eventId}"]`);
+            if (eventCard) {
+                eventCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Briefly highlight the new game
+                eventCard.style.backgroundColor = '#dbeafe';
+                eventCard.style.transition = 'background-color 0.3s ease';
+                setTimeout(() => {
+                    eventCard.style.backgroundColor = '';
+                }, 2000);
+            }
+        }, 100);
+
         showSuccess('Game added successfully');
     } catch (error) {
         console.error('Error creating game:', error);
@@ -1120,9 +1182,13 @@ function showSuccess(message) {
 }
 
 // Edit time function
-async function editTime(element, eventId, currentTime, currentTba) {
+async function editTime(element, eventId, currentTime, currentTba, eventDate) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
+
+    // Store the event date for later use
+    modal.dataset.eventDate = eventDate;
+    modal.dataset.eventId = eventId;
 
     // Parse current time if it exists
     let hour = '12';
@@ -1237,10 +1303,14 @@ async function saveTime(eventId) {
         hours24 = 0;
     }
 
-    // Create ISO time string
-    const today = new Date();
-    today.setHours(hours24, minute, 0, 0);
-    const time = today.toISOString();
+    // Get the event date from the modal
+    const modal = document.querySelector('.modal-overlay');
+    const eventDate = modal.dataset.eventDate;
+
+    // Parse the date string (format: YYYY-MM-DD) and create a date in local timezone
+    const [year, month, day] = eventDate.split('-').map(Number);
+    const dateTime = new Date(year, month - 1, day, hours24, minute, 0, 0);
+    const time = dateTime.toISOString();
 
     try {
         const response = await fetch(`${API_BASE_URL}/games/event/${eventId}/time`, {
@@ -1255,7 +1325,7 @@ async function saveTime(eventId) {
             closeTimeModal();
             showSuccess('Time updated successfully');
             if (state.selectedGroup) {
-                loadEvents(state.selectedGroup.id);
+                await loadEvents(state.selectedGroup.id);
             }
         } else {
             showError('Failed to update time');

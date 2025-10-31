@@ -161,6 +161,14 @@ public class GameService {
         } else {
             eventTime.setTime(time);
             eventTime.setTba(0);
+
+            // Also update the Event's date field to match the date portion of the time
+            Event event = eventRepository.findById(eventId).orElse(null);
+            if (event != null) {
+                java.time.LocalDate newDate = time.toLocalDate();
+                event.setDate(newDate);
+                eventRepository.save(event);
+            }
         }
         eventTime.setTimestamp(java.time.OffsetDateTime.now());
 
@@ -291,6 +299,14 @@ public class GameService {
                 java.time.OffsetDateTime dateTime = parseDateTime(dateStr, timeStr);
                 eventTime.setTime(dateTime);
                 eventTime.setTba(0);
+
+                // Update the Event's date to match the date portion of the parsed time
+                // This ensures consistency even if timezone conversion shifts the date
+                java.time.LocalDate actualDate = dateTime.toLocalDate();
+                if (!actualDate.equals(event.getDate())) {
+                    event.setDate(actualDate);
+                    eventRepository.save(event);
+                }
             }
             eventTime.setTimestamp(java.time.OffsetDateTime.now());
             eventTimeRepository.save(eventTime);
