@@ -44,6 +44,13 @@
                 <span>Connected</span>
             </div>
 
+            <button class="btn-secondary" onclick="openMessageTool()" title="Messages">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Messages
+            </button>
+
             <button class="icon-btn" onclick="refreshAll()" title="Refresh">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M23 4v6h-6M1 20v-6h6"/>
@@ -87,12 +94,6 @@
                     <span id="group-count" class="count-badge">0</span>
                 </div>
                 <div class="panel-actions">
-                    <button class="btn-secondary" onclick="openMessageTool()">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                        Messages
-                    </button>
                     <button class="btn-primary" onclick="addGroup()">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <line x1="12" y1="5" x2="12" y2="19"/>
