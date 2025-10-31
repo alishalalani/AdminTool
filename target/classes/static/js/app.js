@@ -554,7 +554,7 @@ function displayEvents(games) {
                             <div class="team-name editable-team"
                                  data-participant-id="${game.awayParticipantId || ''}"
                                  data-team-id="${game.awayTeamId || ''}"
-                                 onclick="editTeam(this, ${game.leagueId}, ${game.awayParticipantId})"
+                                 onclick="editTeam(this, ${game.leagueId}, ${game.awayParticipantId}, ${game.eventId})"
                                  title="Click to edit team">
                                 ${game.awayTeam || 'TBD'}
                             </div>
@@ -569,7 +569,7 @@ function displayEvents(games) {
                             <div class="team-name editable-team"
                                  data-participant-id="${game.homeParticipantId || ''}"
                                  data-team-id="${game.homeTeamId || ''}"
-                                 onclick="editTeam(this, ${game.leagueId}, ${game.homeParticipantId})"
+                                 onclick="editTeam(this, ${game.leagueId}, ${game.homeParticipantId}, ${game.eventId})"
                                  title="Click to edit team">
                                 ${game.homeTeam || 'TBD'}
                             </div>
@@ -1553,6 +1553,26 @@ function showSuccess(message) {
     console.log('Success: ' + message);
 }
 
+// Highlight a game card with a flash animation
+function highlightGameCard(eventId) {
+    const gameCard = document.querySelector(`.event-card[data-event-id="${eventId}"]`);
+    if (gameCard) {
+        // Remove the class if it already exists (to restart animation)
+        gameCard.classList.remove('highlight-flash');
+
+        // Force a reflow to restart the animation
+        void gameCard.offsetWidth;
+
+        // Add the animation class
+        gameCard.classList.add('highlight-flash');
+
+        // Remove the class after animation completes
+        setTimeout(() => {
+            gameCard.classList.remove('highlight-flash');
+        }, 1500);
+    }
+}
+
 // Edit time function
 async function editTime(element, eventId, currentTime, currentTba, eventDate) {
     const modal = document.createElement('div');
@@ -1698,6 +1718,8 @@ async function saveTime(eventId) {
             showSuccess('Time updated successfully');
             if (state.selectedGroup) {
                 await loadEvents(state.selectedGroup.id);
+                // Highlight the updated game card
+                setTimeout(() => highlightGameCard(eventId), 100);
             }
         } else {
             showError('Failed to update time');
@@ -1729,7 +1751,9 @@ async function setTBA(eventId) {
             closeTimeModal();
             showSuccess('Time set to TBA');
             if (state.selectedGroup) {
-                loadEvents(state.selectedGroup.id);
+                await loadEvents(state.selectedGroup.id);
+                // Highlight the updated game card
+                setTimeout(() => highlightGameCard(eventId), 100);
             }
         } else {
             const errorText = await response.text();
@@ -1758,7 +1782,7 @@ function closeTimeModal() {
 }
 
 // Edit team function
-async function editTeam(element, leagueId, participantId) {
+async function editTeam(element, leagueId, participantId, eventId) {
     if (!leagueId || !participantId) {
         showError('Cannot edit team: missing league or participant information');
         return;
@@ -1782,7 +1806,7 @@ async function editTeam(element, leagueId, participantId) {
         }
 
         // Show team selection modal
-        showTeamSelectionModal(validTeams, participantId);
+        showTeamSelectionModal(validTeams, participantId, eventId);
     } catch (error) {
         console.error('Error fetching teams:', error);
         showError('Failed to load teams');
@@ -1790,7 +1814,7 @@ async function editTeam(element, leagueId, participantId) {
 }
 
 // Show team selection modal
-function showTeamSelectionModal(teams, participantId) {
+function showTeamSelectionModal(teams, participantId, eventId) {
     console.log ("teams lebgth: ", teams.length);
     // Create modal overlay
     const modal = document.createElement('div');
@@ -1799,7 +1823,7 @@ function showTeamSelectionModal(teams, participantId) {
         <div class="modal-content team-selection-modal">
             <div class="modal-header">
                 <h3>Select Team</h3>
-                <button class="tbd-button" onclick="selectTBD(${participantId})">TBD</button>
+                <button class="tbd-button" onclick="selectTBD(${participantId}, ${eventId})">TBD</button>
                 <button class="modal-close" onclick="closeTeamModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1812,7 +1836,7 @@ function showTeamSelectionModal(teams, participantId) {
                     ${teams.map(team => `
                         <div class="team-item"
                              data-team-name="${team.teamName.toLowerCase()}"
-                             onclick="selectTeam(${participantId}, ${team.leagueTeamId})">
+                             onclick="selectTeam(${participantId}, ${team.leagueTeamId}, ${eventId})">
                             ${team.teamName}
                         </div>
                     `).join('')}
@@ -1823,9 +1847,27 @@ function showTeamSelectionModal(teams, participantId) {
 
     document.body.appendChild(modal);
 
-    // Focus on search input
+    // Focus on search input and set up keyboard navigation
     setTimeout(() => {
-        document.getElementById('team-search').focus();
+        const searchInput = document.getElementById('team-search');
+        searchInput.focus();
+
+        // Highlight first team initially
+        highlightFirstVisibleTeam();
+
+        // Add keyboard event listener for Enter key and arrow keys
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                selectHighlightedTeam();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                highlightNextTeam();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                highlightPreviousTeam();
+            }
+        });
     }, 100);
 
     // Close on overlay click
@@ -1849,10 +1891,74 @@ function filterTeams() {
             item.style.display = 'none';
         }
     });
+
+    // Highlight the first visible team after filtering
+    highlightFirstVisibleTeam();
+}
+
+// Highlight the first visible team
+function highlightFirstVisibleTeam() {
+    const teamItems = document.querySelectorAll('.team-item');
+
+    // Remove highlight from all items
+    teamItems.forEach(item => item.classList.remove('highlighted'));
+
+    // Find and highlight the first visible item
+    for (let item of teamItems) {
+        // Check if item is visible (not hidden by filter)
+        if (item.style.display === '' || item.style.display === 'block') {
+            console.log('Highlighting team:', item.textContent.trim());
+            item.classList.add('highlighted');
+            item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            break;
+        }
+    }
+}
+
+// Highlight the next team in the list
+function highlightNextTeam() {
+    const teamItems = Array.from(document.querySelectorAll('.team-item'));
+    const visibleItems = teamItems.filter(item => item.style.display === '' || item.style.display === 'block');
+    const currentHighlighted = visibleItems.findIndex(item => item.classList.contains('highlighted'));
+
+    if (visibleItems.length === 0) return;
+
+    // Remove current highlight
+    teamItems.forEach(item => item.classList.remove('highlighted'));
+
+    // Highlight next item (or first if at end)
+    const nextIndex = currentHighlighted < visibleItems.length - 1 ? currentHighlighted + 1 : 0;
+    visibleItems[nextIndex].classList.add('highlighted');
+    visibleItems[nextIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// Highlight the previous team in the list
+function highlightPreviousTeam() {
+    const teamItems = Array.from(document.querySelectorAll('.team-item'));
+    const visibleItems = teamItems.filter(item => item.style.display === '' || item.style.display === 'block');
+    const currentHighlighted = visibleItems.findIndex(item => item.classList.contains('highlighted'));
+
+    if (visibleItems.length === 0) return;
+
+    // Remove current highlight
+    teamItems.forEach(item => item.classList.remove('highlighted'));
+
+    // Highlight previous item (or last if at beginning)
+    const prevIndex = currentHighlighted > 0 ? currentHighlighted - 1 : visibleItems.length - 1;
+    visibleItems[prevIndex].classList.add('highlighted');
+    visibleItems[prevIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// Select the currently highlighted team
+function selectHighlightedTeam() {
+    const highlightedItem = document.querySelector('.team-item.highlighted');
+    if (highlightedItem) {
+        highlightedItem.click();
+    }
 }
 
 // Select team
-async function selectTeam(participantId, leagueTeamId) {
+async function selectTeam(participantId, leagueTeamId, eventId) {
     try {
         const response = await fetch(`${API_BASE_URL}/games/participant/${participantId}/team`, {
             method: 'PUT',
@@ -1867,7 +1973,9 @@ async function selectTeam(participantId, leagueTeamId) {
             showSuccess('Team updated successfully');
             // Reload events for the current group
             if (state.selectedGroup) {
-                loadEvents(state.selectedGroup.id);
+                await loadEvents(state.selectedGroup.id);
+                // Highlight the updated game card
+                setTimeout(() => highlightGameCard(eventId), 100);
             }
         } else {
             showError('Failed to update team');
@@ -1879,7 +1987,7 @@ async function selectTeam(participantId, leagueTeamId) {
 }
 
 // Select TBD
-async function selectTBD(participantId) {
+async function selectTBD(participantId, eventId) {
     try {
         // Delete the participant's team assignment by setting leagueTeamId to null
         const response = await fetch(`${API_BASE_URL}/games/participant/${participantId}/team`, {
@@ -1891,7 +1999,9 @@ async function selectTBD(participantId) {
             showSuccess('Team set to TBD');
             // Reload events for the current group
             if (state.selectedGroup) {
-                loadEvents(state.selectedGroup.id);
+                await loadEvents(state.selectedGroup.id);
+                // Highlight the updated game card
+                setTimeout(() => highlightGameCard(eventId), 100);
             }
         } else {
             showError('Failed to set team to TBD');

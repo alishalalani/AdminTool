@@ -775,6 +775,29 @@ body {
     color: var(--text-tertiary);
 }
 
+/* Game Card Highlight Animation */
+@keyframes highlightFlash {
+    0% {
+        background: var(--primary-light);
+        border-color: var(--primary);
+        transform: scale(1.02);
+    }
+    50% {
+        background: var(--primary-light);
+        border-color: var(--primary);
+        transform: scale(1.02);
+    }
+    100% {
+        background: var(--bg-primary);
+        border-color: var(--border);
+        transform: scale(1);
+    }
+}
+
+.event-card.highlight-flash {
+    animation: highlightFlash 1.5s ease-out;
+}
+
 /* Deactivated Games Section */
 .deactivated-section {
     margin-top: 24px;
@@ -1152,6 +1175,13 @@ textarea.form-input {
     background: var(--bg-tertiary);
     color: var(--primary);
     padding-left: 20px;
+}
+
+.team-item.highlighted {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-left: 3px solid var(--primary);
+    padding-left: 17px;
 }
 
 .team-item:active {
