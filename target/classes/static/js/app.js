@@ -2229,11 +2229,7 @@ function openMessageTool() {
                     <textarea id="message-text"
                               class="message-textarea"
                               placeholder="Type your message here..."
-                              maxlength="500"
-                              oninput="updateCharCount()"></textarea>
-                    <div class="message-char-count">
-                        <span id="char-count">0</span> / 500 characters
-                    </div>
+                              maxlength="500"></textarea>
                 </div>
             </div>
             <div class="message-tool-footer">
@@ -2318,11 +2314,7 @@ function openMessageToolForEvent(eventId, awayTeam, homeTeam, dateTime) {
                     <textarea id="message-text"
                               class="message-textarea"
                               placeholder="Type your message here..."
-                              maxlength="500"
-                              oninput="updateCharCount()"></textarea>
-                    <div class="message-char-count">
-                        <span id="char-count">0</span> / 500 characters
-                    </div>
+                              maxlength="500"></textarea>
                 </div>
             </div>
             <div class="message-tool-footer">
